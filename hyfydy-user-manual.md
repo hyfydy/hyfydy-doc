@@ -419,13 +419,56 @@ In SCONE, `dof` components are used to define model coordinates, which can be us
 
 # Forces
 
+In Hyfydy, all accelerations and constraints are enacted through forces. In general, it is possible to distinguish between joint forces, contact forces, actuator forces and external forces. Forces can be configured flexibly and at run-time, via a simple configuration script.
+
+**Example**
+
+```
+composite_force {
+	planar_joint_force_pnld {}
+	simple_collision_detection {}
+	contact_force_hunt_crossley_sb { transition_velocity = 0.1 }
+	muscle_force_m2012fast { xi = 0.1 }
+}
+```
+
+As you can see, multiple forces can be added in order, and each individual force has its own settings.
+
 ## Joint Forces
 
-*This section is still under construction*
+Joint forces hold joints together, just like ligament and cartilage do in human and animal joints. They include *joint limit forces*, which are active only after joint angles cross a certain threshold. Joint limit forces are often less stiff than joint constraint forces, and allow for a smooth force transition, while joint constraint forces are typically much stiffer.
 
 ### joint_force_pnld
 
+For each joint $j$, The `joint_force_pnld` applies a proportional derivate force $F_j$ based on joint displacement $p_j$ and displacement velocity $v_j$:
+$$
+F_j = -k_p p_j - k_v v_j
+$$
+The force $F_j$ is applied in opposite directions to the child and parent body of the joint, at their respective `pos_in_child` and `pos_in_parent` position. See [joint](#joint) for more details.
+
+In addition to a joint displacement force, `joint_force_pnld` also applies a joint limit torque $\tau_j$ based on joint angle $\alpha_j$ and angular velocity $\omega_j$:
+$$
+\tau_j = -k_\alpha \theta_j(\alpha_j, \alpha_{min}, \alpha_{max}) ( 1 + k_\omega \omega_j)
+$$
+in which the joint displacement angle $\theta_j$ is defined as:
+$$
+\theta_j(\alpha_j, \alpha_{min}, \alpha_{max}) = \begin{cases}
+\alpha_j - \alpha_{min}, & \text{if} \ \alpha_j < \alpha_{min}\\
+\alpha_j - \alpha_{max}, & \text{if} \ \alpha_j > \alpha_{max}\\
+0, & \text{otherwise}\\
+\end{cases}
+$$
+The joint limit damping is non-linear to prevent damping to be fully active immediately after a joint angle crosses its limit, which is unrealistic. Instead, joint limit damping force is scaled by the joint limit displacement, following similar considerations as for the [Hunt-Crossley contact restitution force](#contact_force_hunt_crossley)[^HC1975].
+
+The `stiffness`, `damping`, `limit_stiffness` and `limit_damping` parameters are specified individually per [joint](#joint), or use a defaults based on [model_options](#model_options). As a result, `joint_force_pnld` does not contain any options for itself and can simply be added as:
+
+```
+joint_force_pnld {}
+```
+
 ### joint_force_pd
+
+This force is similar to `joint_force_pnld`, with the exception that the limit damping torque linearly depends on the angular velocity $\omega_j$. This damping component is active immediately after a joint angle crosses its limit angle, resulting in an immediate torque in the opposite direction. As a result, using `joint_force_pnld` is recommended instead.
 
 ### planar_joint_force_pnld
 
