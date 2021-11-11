@@ -131,15 +131,15 @@ A `body` component can contain the following properties:
 
 | Identifier | Type       | Description                                                  | Default      |
 | ---------- | ---------- | ------------------------------------------------------------ | ------------ |
-| `name`     | string     | Name of the body                                             | empty        |
+| `name`     | string     | Name of the body                                             | *empty*      |
 | `mass`     | number     | Body mass                                                    | *required*\* |
 | `inertia`  | vector3    | Diagonal components of the inertia matrix                    | *required*\* |
 | `density`  | number     | Density used to calculate the body mass and inertia, together with shape | *required*\* |
 | `shape`    | Shape      | Shape used to calculate the body mass and inertia, together with density | *required*\* |
-| `pos`      | vector3    | Initial position of the body center-of-mass                  | `[0 0 0]`    |
-| `ori`      | quaternion | Initial orientation of the body                              | `[0 0 0]`    |
-| `lin_vel`  | vector3    | Initial linear velocity of the body center-of-mass           | `[0 0 0]`    |
-| `ang_vel`  | vector3    | Initial angular velocity of the body                         | `[0 0 0]`    |
+| `pos`      | vector3    | Initial position of the body center-of-mass                  | *zero*       |
+| `ori`      | quaternion | Initial orientation of the body                              | *identity*   |
+| `lin_vel`  | vector3    | Initial linear velocity of the body center-of-mass           | *zero*       |
+| `ang_vel`  | vector3    | Initial angular velocity of the body                         | *zero*       |
 
 \* A body must contain *either* `mass` and `inertia`, *or* `density` and `shape` in order to have valid mass properties.
 
@@ -188,10 +188,10 @@ Joint components constrain the motion between two bodies. They can contain the f
 | `child`           | string     | Name of the child body                                      | *required*                      |
 | `pos_in_parent`   | vector3    | Position of the joint in the parent body frame-of-reference | *required*                      |
 | `pos_in_child`    | vector3    | Position of the joint in the child body frame-of-reference  | *required*                      |
-| `ref_ori`         | quaternion | Reference orientation of the child body wrt the parent body | identity                        |
+| `ref_ori`         | quaternion | Reference orientation of the child body wrt the parent body | *identity*                      |
 | `stiffness`       | number     | Stiffness property of the joint constraint force            | [model_options](#model_options) |
 | `damping`         | number     | Damping property of the joint constraint force              | [model_options](#model_options) |
-| `limits`          | range      | Rotational joint limits, expressed as a vector3 of ranges   | none                            |
+| `limits`          | range      | Rotational joint limits, expressed as a vector3 of ranges   | *none*                          |
 | `limit_stiffness` | number     | Stiffness property of the joint limit force                 | [model_options](#model_options) |
 | `limit_damping`   | number     | Damping property of the joint limit force                   | [model_options](#model_options) |
 
@@ -349,7 +349,7 @@ A `joint_motor` component can contain the following properties:
 | `stiffness`     | number     | Stiffness for position-dependent torque ($k_p$)              | `0`        |
 | `damping`       | number     | Damping for velocity-dependent torque ($k_d$)                | `0`        |
 | `max_torque`    | number     | Maximum torque magnitude that can be applied by the motor ($\tau_{max}$) | +infinity  |
-| `target_ori`    | quaternion | Target orientation for the motor ($q_t$)                     | `[0 0 0]`  |
+| `target_ori`    | quaternion | Target orientation for the motor ($q_t$)                     | *identity* |
 | `target_vel`    | vector3    | Target angular velocity ($v_t$)                              | `[0 0 0]`  |
 | `torque_offset` | vector3    | Base torque ($\tau_o$)                                       | `[0 0 0]`  |
 
