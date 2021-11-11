@@ -331,15 +331,15 @@ point_path_muscle {
 
 The `joint_point_path_muscle` is identical to a point path muscle, with the exception that with these types of muscles, joint torques are applied instead of forces. The advantage of applying a torque is that it leads to less joint displacement, which in turn can improve performance. Applying torques instead of forces also makes the simulation more similar to reduced coordinate simulation engines, such as OpenSim. If instead accurate computation of joint displacement caused by muscle force is required, this type of component is not recommended.
 
-The properties of the `joint_point_path_muscle` are identical to that of the `point_path_muscle`.
+The properties of the `joint_point_path_muscle` are identical to those of a [point_path_muscle](#point_path_muscle).
 
 ### joint_motor
 
 Joint motors produce a 3D joint torque based on joint angle and joint velocity. The amount of torque $\tau$ is based on base torque $\tau_{o}$, stiffness $k_p$, damping $k_d$, orientation $q$, target orientation $q_t$, angular velocity $\omega$, and target velocity $\omega_t$:
 $$
-\tau = \Big[\tau_{o} + k_p \lambda(q^{-1} q_t) + k_d(v_{t}-v)\Big]^{\tau_{max}}
+\tau = \Big[\tau_{o} + k_p r(q^{-1} q_t) + k_d(v_{t}-v)\Big]^{\tau_{max}}
 $$
-The notation $[\space]^{\tau_{max}}$ is used to indicate that the magnitude of the final torque is clamped between $[-\tau_{max}, \tau_{max}]$. The function $\lambda: \R^4 \rightarrow \R^3$ converts a quaternion to a 3D rotation vector.
+The notation $[\space]^{\tau_{max}}$ is used to indicate that the magnitude of the final torque is clamped between $[-\tau_{max}, \tau_{max}]$. The function $r: \R^4 \rightarrow \R^3$ converts a quaternion to a 3D *rotation vector*, which corresponds to the 3D *rotation axis* scaled by *rotation angle* in radians.
 
 A `joint_motor` component can contain the following properties:
 
@@ -389,9 +389,9 @@ Components of type `mesh` can be used by client applications for visualizing bod
 | ---------- | ---------- | --------------------------------------------------- | ------------- |
 | `file`     | string     | Mesh filename                                       | *empty*       |
 | `shape`    | Shape      | Mesh shape                                          | *empty*       |
-| pos        | vector3    | Position of the mesh in the body reference frame    | `[0 0 0]`     |
-| ori        | quaternion | Orientation of the mesh in the body reference frame | *identity*    |
-| color      | color      | Color of the mesh, in format `[r g b a]`            | *unspecified* |
+| `pos`      | vector3    | Position of the mesh in the body reference frame    | `[0 0 0]`     |
+| `ori`      | quaternion | Orientation of the mesh in the body reference frame | *identity*    |
+| `color`    | color      | Color of the mesh, in format `[r g b a]`            | *unspecified* |
 
 **Example**
 
@@ -405,21 +405,33 @@ mesh {
 
 ### dof
 
+Components of type `dof` can be used to describe a specific degree-of-freedom, which can be used by a client application for control and analysis. In SCONE, `dof` components are used to define model coordinates, which are used for analysis and control.
+
+In Hyfydy, all bodies contain 6 degrees-of-freedom (3 translational and 3 rotational) – specifying specific degrees-of-freedom using a `dof` component does not affect the simulation.
+
+The `dof` component can contain the following properties:
+
+| Identifier | Type   | Description                                                  | Default    |
+| ---------- | ------ | ------------------------------------------------------------ | ---------- |
+| `name`     | string | Name of the degree-of-freedom                                | *required* |
+| `source`   | string | Default name of the dof. This consists of the name of the body appended by `_rx`, `_ry` or `_rz` for rotation relative to its parent, or `_tx`, `_ty` and `_tz` for translation of a root body. Dof values can be inverted by prepending the source with a minus sign (`-`). | *required* |
+| `default`  | number | Default value of the dof                                     | `0`        |
+| `range`    | range  | Minimum and maximum values of the dof. Note that these values are not enforced during the simulation, use a [joint limit force](#Joint Forces) for that instead. | `-90..90`  |
+
 In Hyfydy, all bodies contain 6 degrees-of-freedom – 3 translational and 3 rotational. In practice, joints limit their movement…
 
 ```
 dof {
-	name = hip_flexion_r
-	source = hip_joint_rz
-	range = 0..10
+	name = pelvis_tilt
+	source = pelvis_rz
+	default = 0
+	range = -90..90
 }
 ```
 
-In SCONE, `dof` components are used to define model coordinates, which can be used for analysis and control.
-
 # Forces
 
-In Hyfydy, all accelerations and constraints are enacted through forces. In general, it is possible to distinguish between joint forces, contact forces, actuator forces and external forces. Forces can be configured flexibly and at run-time, via a simple configuration script.
+In Hyfydy, all accelerations and constraints are the result of forces. Forces of different types can exist, but in general it is possible to distinguish between [joint forces](#joint forces), [contact forces](#contact forces), [actuator forces](#actuator forces) and [external forces](#external forces). Forces can be configured flexibly and at run-time, via a simple configuration script.
 
 **Example**
 
@@ -472,9 +484,24 @@ This force is similar to `joint_force_pnld`, with the exception that the limit d
 
 ### planar_joint_force_pnld
 
+Similar to `joint_force_pnld`, with the exception that forces and torques are applied only in the *x-y plane*. This force should be used with planar simulations to increase performance. This force should be used in combination with a [planar integrator](#Integrators).
+
 ### planar_joint_force_pd
 
+Similar to `joint_force_pd`, with the exception that forces and torques are applied only in the *x-y plane*. This force should be used with planar simulations to increase performance. This force should be used in combination with a [planar integrator](#Integrators).
+
 ## Contact Forces
+
+Contact forces are applied to bodies based on their `geometry` and `material`. When the geometries of two bodies intersect a restitution and friction force is computed based on the penetration depth, the relative velocity of the bodies at the point of contact, and the material properties of the contact. The application of contact forces consists of two phases:
+
+1. **Collision detection**. Geometries are checked for intersections, and contacts between geometries are recorded.
+2. **Collision response**. Restitution and friction forces are applied to colliding bodies, based on recorded contacts.
+
+In Hyfydy, each phase is configured separately using a force – despite the fact that no forces are generated during the contact detection phase. Both a collision detection and collision response force must be present in order for contact forces to work.
+
+### Combining Material Properties
+
+*This section is still under construction*
 
 ### simple_collision_detection
 
@@ -482,19 +509,17 @@ This force is similar to `joint_force_pnld`, with the exception that the limit d
 
 ### contact_force_pd
 
-Simple linear damped spring contact restitution force, also known as the Kelvin-Voigt contact model:
+Simple linear damped spring contact restitution force, also known as the Kelvin-Voigt contact model.
 
 This force has no extra parameters and can be added by including:
 
 ```
-contact_force_pd {
-	viscosity = 1000
-}
+contact_force_pd { viscosity = 1000 }
 ```
 
 ### contact_force_hunt_crossley
 
-The Hunt-Crossley[^HC1975] force model uses non-linear damping which is based on penetration depth.
+The Hunt-Crossley[^HC1975] force model uses non-linear damping based on penetration depth.
 
 ### contact_force_hunt_crossley_sb
 
@@ -512,7 +537,7 @@ contact_force_hunt_crossley_sb {
 }
 ```
 
-## Muscle Forces
+## Actuator Forces
 
 ### muscle_force_m2012fast
 
@@ -526,8 +551,6 @@ This is an implementation of the Hill-type muscle model described by Geyer & Her
 
 This is an implementation of the muscle model described in a [document authored by Chand T. John](https://simtk-confluence.stanford.edu/download/attachments/2624181/CompleteDescriptionOfTheThelen2003MuscleModel.pdf?version=1&modificationDate=1319838594036&api=v2), which is a modification of the model published by Thelen et al. Despite its popularity, this model is best avoided, because its force-velocity relationship is poorly defined at low activation and relies heavily on its ad-hoc extrapolation of the force-velocity curve. We recommend using the `muscle_force_m2012fast` model instead.
 
-## Torque Actuators
-
 ### joint_motor_force
 
 The joint_motor_force component produces joint torques defined by [joint_motor](#joint_motor) components, and needs to be included for models that use them. They contain no additional settings.
@@ -535,6 +558,12 @@ The joint_motor_force component produces joint torques defined by [joint_motor](
 ```
 joint_motor_force {}
 ```
+
+## External Forces
+
+### gravity
+
+### perturbation
 
 # Integrators
 
