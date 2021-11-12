@@ -561,35 +561,99 @@ joint_motor_force {}
 
 ## External Forces
 
+External forces include gravity and perturbation. These forces are applied to automatically when defined in the model.
+
 ### gravity
+
+Gravity is applied automatically to all non-static bodies in the model. The magnitude and direction is determined by the `gravity` property defined inside the [model](#model). To disable gravity, simply add `gravity = [ 0 0 0 ]`.
 
 ### perturbation
 
+Perturbation forces are applied automatically based on `perturbation` components defined inside the model. Since perturbations usually change over time, `perturbation` components are typically not defined in the model itself, but are added by a client application.
+
+In SCONE, perturbations and perturbation forces are enabled automatically when after specifying `enable_external_forces = 1` in the SCONE Model configuration.
+
 # Integrators
 
-## Fixed-step Integrators
+## Overview
 
-*This section is still under construction*
+Integrators advance the simulation by updating the velocity and position/orientation of each body, based on the linear and angular acceleration that is the result of the sum of all forces. Formally, an integrator $I$ updates a set of generalized coordinates $q_t$ and derivatives $\dot{q}_{t}$ at time $t$ based on $\ddot{q}_{t}$ and step size $h$:
+$$
+\{ q_{t+h}, \dot{q}_{t+h} \} = I(q_t, \dot{q}_{t}, \ddot{q}_{t}, h )
+$$
 
-### forward_euler_integrator
+### Fixed-step vs Variable-step
 
-### symplectic_euler_integrator
+With fixed-step integrators, the time interval by which the state is advanced is constant throughout the simulation. While this approach is common among physics simulation engines, it has the disadvantage that a simulation can become unstable when the interval is too large.
 
-### midpoint_euler_integrator
+With variable-step integrators, the step-size $h$ is not fixed, but determined based on a set of accuracy settings $\mathcal{A}$:
+$$
+\{ h, q_{t+h}, \dot{q}_{t+h} \} = I(p_t, \dot{q}_{t}, \ddot{q}_{t}, \mathcal{A})
+$$
+Variable-step integrators are an important part of Hyfydy, and allow for a stable and efficient trade-off between performance and accuracy.
 
-### planar_symplectic_euler_integrator
+## Integration Methods
+
+### Forward Euler
+
+The most straightforward integration method is the Forward Euler method, which updates positions  $q_t$ using velocities $\dot{q}_{t}$, which in turn are updated using accelerations $\ddot{q}_{t}$:
+
+$$
+q_{t+h} & = & q_t + h \dot{q}_{t} \\
+\dot{q}_{t+h} & = & \dot{q}_{t} + h \ddot{q}_{t}
+$$
+
+The downside of this approach is that the positions are updated using a poor estimate of the velocity during interval $h$. This can lead to an accumulation of errors and energy being added to system.
+
+### Symplectic Euler
+
+The Symplectic Euler or semi-implicit Euler method improves over the Forward Euler method by updating velocities first and using the updated velocities $\dot{q}_{t+h}$ to update positions  $q_t$:
+$$
+\dot{q}_{t+h} & = & \dot{q}_{t} + h \ddot{q}_{t} \\
+q_{t+h} & = & q_t + h \dot{q}_{t+h}
+$$
+This approach leads to increased stability and energy conservation over the Forward Euler method. However, the position update is still based on a poor estimate of the velocity during the step (even with constant acceleration), and as such this method does not improve accuracy.
+
+### Midpoint Euler
+
+The Midpoint Euler method uses the average or midpoint velocity between to update the position, leading to a better position estimate:
+$$
+\dot{q}_{t+h} & = & \dot{q}_{t} + h \ddot{q}_{t} \\
+q_{t+h} & = & p_t + \frac{h}{2}(\dot{q}_{t} + \dot{q}_{t+h})
+$$
+With this approach, both position and velocity updates are most accurate if acceleration $\ddot{q}_{t}$ remains constant over interval $h$. Despite being more accurate, it is typically outperformed by the Symplectic Euler method in terms of stability and energy conservation. However, in combination with a error-controlled variable-step integration strategy, the increased accuracy can be considered more important.
+
+### Higher-order Methods
+
+In contrast to the first-order integrators described above, high-order integrators attempt to increase accuracy by evaluating the forces and accelerations at multiple points in time $t$.
+
+### Muscle Activation Dynamics
+
+In addition to integrating body position and velocity, integrators in Hyfydy also handle muscle activation dynamics. The muscle activation and deactivate are properties that are part of the integrator:
+
+| Identifier          | Type   | Description                             | Default |
+| ------------------- | ------ | --------------------------------------- | ------- |
+| `activation_rate`   | number | The muscle activation rate [$s^{-1}$]   | 100     |
+| `deactivation_rate` | number | The muscle deactivation rate [$s^{-1}$] | 25      |
+
+Given muscle activation $a_t$ and excitation $u_t$ at time $t$, then activation is updated to $a_{t+h}$ according to:
+$$
+\dot{a}_t & = & (u_t - a_t)(c_1 u_t + c_2)\\
+a_{t+h} & = &a_t + h \dot{a}_t
+$$
+in which `activation_rate` corresponds to $c_1 + c_2$, while `deactivation_rate` corresponds to $c_2$.
 
 ## Variable-step Integrators
 
-*This section is still under construction*
+With fixed-step integrators, the time interval by which the state is advanced is constant throughout the simulation. While this approach is common among physics simulation engines, it has the disadvantage that a simulation can become unstable when the interval is too large. 
 
-### error_control_integrator_sem
+With variable-step integrators, the step-size $h$ is not fixed, but determined based on a set of accuracy settings $\mathcal{A}$:
+$$
+\{ h, q_{t+h}, \dot{q}_{t+h} \} = I(p_t, \dot{q}_{t}, \ddot{q}_{t}, \mathcal{A})
+$$
+## Integrator Configuration
 
-### error_control_integrator_mem
-
-### error_control_integrator_secm
-
-### error_control_integrator_psem
+In Hyfydy, the integrator can be configured via a configuration file. In SCONE, this configuration is directly added to the Model.
 
 # Practical Considerations
 
