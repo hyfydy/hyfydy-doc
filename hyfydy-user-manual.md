@@ -431,7 +431,7 @@ dof {
 
 # Forces
 
-In Hyfydy, all accelerations and constraints are the result of forces. Forces of different types can exist, but in general it is possible to distinguish between [joint forces](#joint forces), [contact forces](#contact forces), [actuator forces](#actuator forces) and [external forces](#external forces). Forces can be configured flexibly and at run-time, via a simple configuration script.
+In Hyfydy, all accelerations and constraints are the result of forces. Forces of different types can exist, but in general it is possible to distinguish between [joint forces](#joint forces), [contact forces](#contact forces), [actuator forces](#actuator forces) and [external forces](#external forces). Forces can be configured flexibly and at run-time, by specifying individual force components in a configuration script.
 
 **Example**
 
@@ -444,21 +444,21 @@ composite_force {
 }
 ```
 
-As you can see, multiple forces can be added in order, and each individual force has its own settings.
+Multiple force component specified, actual forces are applied in order of specification. Each individual force component has its own properties.
 
 ## Joint Forces
 
-Joint forces hold joints together, just like ligament and cartilage do in human and animal joints. They include *joint limit forces*, which are active only after joint angles cross a certain threshold. Joint limit forces are often less stiff than joint constraint forces, and allow for a smooth force transition, while joint constraint forces are typically much stiffer.
+Joint forces hold bodies together, like ligaments and cartilage do in human and animal joints. In addition, ligaments and bony structures also limit the range of motion between bodies – these forces become active after a joint rotates beyond a specific threshold. In Hyfydy, the former set of forces is referred to as *joint constraint forces*, while the latter is referred to as *joint limit forces*. Both joint constraint and joint limit forces are produces by a single force component.
 
 ### joint_force_pnld
 
-For each joint $j$, The `joint_force_pnld` applies a proportional derivate force $F_j$ based on joint displacement $p_j$ and displacement velocity $v_j$:
+For each joint $j$, the `joint_force_pnld` component applies a force $F_j$ based on joint displacement $p_j$ and displacement velocity $v_j$:
 $$
 F_j = -k_p p_j - k_v v_j
 $$
 The force $F_j$ is applied in opposite directions to the child and parent body of the joint, at their respective `pos_in_child` and `pos_in_parent` position. See [joint](#joint) for more details.
 
-In addition to a joint displacement force, `joint_force_pnld` also applies a joint limit torque $\tau_j$ based on joint angle $\alpha_j$ and angular velocity $\omega_j$:
+In addition to a joint constraint force, `joint_force_pnld` also applies a joint limit torque $\tau_j$ based on joint angle $\alpha_j$ and angular velocity $\omega_j$. While the limit torque is proportional to joint displacement angle $\theta_j$, the limit damping torque is non-linear. This prevents damping to become active immediately after a joint angle crosses its limit. Instead, Hyfydy follows similar considerations as for the [Hunt-Crossley contact restitution force](#contact_force_hunt_crossley)[^HC1975], and scales the limit damping by the limit displacement torque:
 $$
 \tau_j = -k_\alpha \theta_j(\alpha_j, \alpha_{min}, \alpha_{max}) ( 1 + k_\omega \omega_j)
 $$
@@ -470,9 +470,9 @@ $$
 0, & \text{otherwise}\\
 \end{cases}
 $$
-The joint limit damping is non-linear to prevent damping to be fully active immediately after a joint angle crosses its limit, which is unrealistic. Instead, joint limit damping force is scaled by the joint limit displacement, following similar considerations as for the [Hunt-Crossley contact restitution force](#contact_force_hunt_crossley)[^HC1975].
 
-The `stiffness`, `damping`, `limit_stiffness` and `limit_damping` parameters are specified individually per [joint](#joint), or use a defaults based on [model_options](#model_options). As a result, `joint_force_pnld` does not contain any options for itself and can simply be added as:
+
+The constants $k_p$, $k_d$, $k_\alpha$ and $k_\omega$ correspond to the `stiffness`, `damping`, `limit_stiffness` and `limit_damping` parameters, which can be specified individually per [joint](#joint), or via defaults based on [model_options](#model_options). As a result, `joint_force_pnld` does not contain any options for itself and can simply be added as:
 
 ```
 joint_force_pnld {}
@@ -480,7 +480,11 @@ joint_force_pnld {}
 
 ### joint_force_pd
 
-This force is similar to `joint_force_pnld`, with the exception that the limit damping torque linearly depends on the angular velocity $\omega_j$. This damping component is active immediately after a joint angle crosses its limit angle, resulting in an immediate torque in the opposite direction. As a result, using `joint_force_pnld` is recommended instead.
+This force is similar to `joint_force_pnld`, with the exception that the limit damping torque is linearly proportional to the angular velocity $\omega_j$:
+$$
+\tau_j = -k_\alpha \theta_j(\alpha_j, \alpha_{min}, \alpha_{max}) - k_\omega \omega_j
+$$
+This damping component is active immediately after a joint angle crosses its limit angle, resulting in an immediate torque in the opposite direction. As a result, using `joint_force_pnld` is recommended instead.
 
 ### planar_joint_force_pnld
 
