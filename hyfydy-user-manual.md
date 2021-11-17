@@ -6,15 +6,15 @@
 
 Hyfydy is software for high-performance musculoskeletal simulation, with a focus on biomechanics research and predictive simulation of human and animal motion. It supports bodies, joints, contacts, musculotendon actuators, and torque actuators. Some of its key features include:
 
-* **High performance**. Hyfydy simulations run 50-100x faster than OpenSim[^SHUD2018], while using the same muscle and contact models. Hyfydy is fast enough for use in real-time applications such as games.
+* **High performance**. Hyfydy simulations run 50-100x faster than OpenSim[^SHUD2018], using the same muscle and contact models*. Hyfydy is also fast enough for use in real-time applications such as games.
 * **Stable integration**. Efficient error-controlled variable-step integration methods ensure the simulation always runs stable at a user-specified accuracy level, without sacrificing performance.
 * **Accurate models**. Hyfydy contains research-grade state-of-the-art models for musculotendon dynamics and contact forces.
 * **Force-based constraints**. Joint constraints in Hyfydy are modeled through forces that mimic the effect of cartilage and ligaments. This allows for customizable joint stiffness and damping, and closed kinematic chains. Hyfydy is optimized to run at high simulation frequencies (>3000Hz) to efficiently handle stiff joint, muscle and contact forces.
-* **Intuitive model format** (no XML) for easy model building and editing. A tool for converting OpenSim models is included[^*].
+* **Intuitive model format** (no XML) for easy model building and editing. A tool for converting OpenSim models is included (only for supported features).
 
 Hyfydy is currently available as a plugin for the open-source SCONE[^G2019]  simulation software. For more information on SCONE, please visit the [SCONE website](https://scone.software).
 
-[^*]: Only a selection of supported features.
+*\* Performance comparison between Hyfydy and OpenSim was based on a 10 second gait simulation using a reflex-based controller[^GH2010] with hill-type musculotendon dynamics[^MUSD2013] and non-linear contact forces[^HC1975]. Control parameters were optimized in SCONE[^G2019] using 1000 generations of CMA-ES[^H2006] on a 4-core i7 Intel CPU.*
 
 ## Citation
 
@@ -252,14 +252,16 @@ Supported shape types for geometry are:
 
 An example of a geometry:
 
-	geometry {
-		name = l_heel
-		type = sphere
-		radius = 0.03
-		body = calcn_l
-		pos { x = -0.085 y = -0.015 z = 0.005 }
-		ori { x = 0 y = 0 z = 0 }
-	}
+```
+geometry {
+	name = l_heel
+	type = sphere
+	radius = 0.03
+	body = calcn_l
+	pos { x = -0.085 y = -0.015 z = 0.005 }
+	ori { x = 0 y = 0 z = 0 }
+}
+```
 
 Alternatively, geometry components can be specified *inside* a body component, in which case the `body` property can be omitted. The shape of the geometry can also be used to automatically calculate the mass properties.
 
@@ -730,7 +732,7 @@ In Hyfydy, the integrator can be configured via a configuration file. In SCONE, 
 
 *This section is under construction*
 
-# Hyfydy vs Other Simulators
+# Comparisons
 
 ## Hyfydy vs OpenSim
 
@@ -769,10 +771,12 @@ Version history will be documented after the 1.0.0 release.
 
 # References
 
-[^G2019]: Geijtenbeek, T. (2019). SCONE: Open Source Software for Predictive Simulation of Biological Motion. Journal of Open Source Software, 4(38), 1421. https://doi.org/10.21105/joss.01421
-[^HC1975]: Hunt, K. H., & Crossley, F. R. E. (1975). Coefficient of Restitution Interpreted as Damping in Vibroimpact. Journal of Applied Mechanics, 42(2), 440.
-[^MUSD2013]: Millard, M., Uchida, T., Seth, A., & Delp, S. L. (2013). Flexing computational muscle: modeling and simulation of musculotendon dynamics. Journal of Biomechanical Engineering, 135(2), 021005. https://doi.org/10.1115/1.4023390
-[^T2003]: Thelen, D. G. (2003). Adjustment of muscle mechanics model parameters to simulate dynamic contractions in older adults. Journal of Biomechanical Engineering, 125(1), 70–77. https://doi.org/10.1115/1.1531112
-[^GH2010]: Geyer, H., & Herr, H. (2010). A muscle-reflex model that encodes principles of legged mechanics produces human walking dynamics and muscle activities. IEEE Transactions on Neural Systems and Rehabilitation Engineering, 18(3), 263–273. **https://doi.org/10.1109/TNSRE.2010.2047592
-[^SHUD2018]: Seth, A., Hicks, J. L., Uchida, T. K., Habib, A., Dembia, C. L., Dunne, J. J., … Delp, S. L. (2018). OpenSim: Simulating musculoskeletal dynamics and neuromuscular control to study human and animal movement. PLoS Computational Biology, 14(7). https://doi.org/10.1371/journal.pcbi.1006223
+[^G2019]:Geijtenbeek, T. (2019). SCONE: Open Source Software for Predictive Simulation of Biological Motion. Journal of Open Source Software, 4(38), 1421. https://doi.org/10.21105/joss.01421
+[^HC1975]:Hunt, K. H., & Crossley, F. R. E. (1975). Coefficient of Restitution Interpreted as Damping in Vibroimpact. Journal of Applied Mechanics, 42(2), 440.
+[^MUSD2013]:Millard, M., Uchida, T., Seth, A., & Delp, S. L. (2013). Flexing computational muscle: modeling and simulation of musculotendon dynamics. Journal of Biomechanical Engineering, 135(2), 021005. https://doi.org/10.1115/1.4023390
+[^T2003]:Thelen, D. G. (2003). Adjustment of muscle mechanics model parameters to simulate dynamic contractions in older adults. Journal of Biomechanical Engineering, 125(1), 70–77. https://doi.org/10.1115/1.1531112
+[^GH2010]:Geyer, H., & Herr, H. (2010). A muscle-reflex model that encodes principles of legged mechanics produces human walking dynamics and muscle activities. IEEE Transactions on Neural Systems and Rehabilitation Engineering, 18(3), 263–273. **https://doi.org/10.1109/TNSRE.2010.2047592
+[^SHUD2018]:Seth, A., Hicks, J. L., Uchida, T. K., Habib, A., Dembia, C. L., Dunne, J. J., … Delp, S. L. (2018). OpenSim: Simulating musculoskeletal dynamics and neuromuscular control to study human and animal movement. PLoS Computational Biology, 14(7). https://doi.org/10.1371/journal.pcbi.1006223
+
+[^H2006]:Hansen, N. (2006). The CMA evolution strategy: a comparing review. Towards a New Evolutionary Computation, 75–102.
 
