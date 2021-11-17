@@ -501,26 +501,48 @@ The force component names of the planar joint forces are as follows:
 
 ## Contact Forces
 
-Contact forces are applied to bodies based on their `geometry` and `material`. When the geometries of two bodies intersect a restitution and friction force is computed based on the penetration depth, the relative velocity of the bodies at the point of contact, and the material properties of the contact. The application of contact forces consists of two phases:
+Contact forces are applied when the geometries of two bodies intersect. A contact force consists of a *restitution* and *friction* component, which are computed based on the penetration depth, the relative velocity of the bodies at the point of contact, and the `material` properties of the contact. The computation of contact forces consists of two phases:
 
 1. **Collision detection**. Geometries are checked for intersections, and contacts between geometries are recorded.
 2. **Collision response**. Restitution and friction forces are applied to colliding bodies, based on recorded contacts.
 
-In Hyfydy, each phase is configured separately using a force – despite the fact that no forces are generated during the contact detection phase. Both a collision detection and collision response force must be present in order for contact forces to work.
+In Hyfydy, each phase is configured using a separate force component, even though technically, the collision detection component only generates contacts and no forces.
+
+**Important**: both a collision detection and collision response force must be present in order for contact forces to work.
 
 ### Collision Detection
 
+Collision detection components detect intersections between the geometries of pairs of bodies. Therefore, it is required to have a `geometry` attached to at least two different bodies in order for collision detection to work.
+
 #### simple_collision_detection
 
-*This section is still under construction*
+The `simple_collision_detection` component detects intersections by going through all relevant pairs of objects. While this is a reasonable strategy when not many geometries are present (as is the case with typical biomechanics simulations), efficiency quickly declines when the number of bodies increases. Therefore, it is important to keep the number of geometries at a minimum when using the `simple_collision_detection` component.
+
+By default, the component is configured to only detect intersections between a static plane geometry and geometries attached to bodies – and not intersections between different bodies. This behavior can be changed by setting the `enable_collision_between_objects` property to 1.
+
+**Important**: setting `enable_collision_between_objects = 1` when many geometries (>10) are present severely impacts simulation performance.
+
+The following properties can be set for `simple_collision_detection`:
+
+| Identifier                         | Type | Description                                                  | Default |
+| ---------------------------------- | ---- | ------------------------------------------------------------ | ------- |
+| `enable_collision_between_objects` | bool | When set to 1, intersections between each pair of geometries are detected. | 0       |
+
+**Example**
+
+```
+simple_collision_detection { enable_collision_between_objects = 1 }
+```
 
 ### Combining Material Properties
 
 When a collision is detected and a contact is generated, the material properties of both bodies are combined and used as part of the collision response.
 
+*This section is still under construction*
+
 ### Collision Response
 
-*This section is still under construction*
+Collision response components compute actual contact forces, based on the contact found during the collision detection phase.
 
 #### contact_force_pd
 
@@ -605,16 +627,16 @@ In SCONE, perturbations and perturbation forces are enabled automatically when a
 
 ## Overview
 
-Integrators advance the simulation by updating the velocity and position/orientation of each body, based on the linear and angular acceleration that is the result of the sum of all forces. Formally, an integrator $I$ updates a set of generalized coordinates $q_t$ and derivatives $\dot{q}_{t}$ at time $t$ based on $\ddot{q}_{t}$ and step size $h$:
+Integrators advance the simulation by updating the velocity and position/orientation of each body, based on the linear and angular acceleration that is the result of the sum of all forces. Formally, an integrator $I_h$ updates a set of generalized coordinates $q_t$ with derivatives $\dot{q}_{t}$ at time $t$ based on accelerations $\ddot{q}_{t}$ and step size $h$:
 $$
-\{ q_{t+h}, \dot{q}_{t+h} \} = I(q_t, \dot{q}_{t}, \ddot{q}_{t}, h )
+\{ q_{t+h}, \dot{q}_{t+h} \} = I_h(q_t, \dot{q}_{t}, \ddot{q}_{t}, h )
 $$
 
-**Variable-step integrators**
+The integrator $I_h$ is a *fixed-step integrator*: during each step, the state is advanced with with a constant time interval. While this approach is common among physics simulation engines, it leaves the difficulty of choosing the step-size $h$ to the user. Step-size that are too small are inefficient, while step-sizes that are too large cause the simulation to become unstable. In practice, the optimal step-size often varies greatly during the course of a simulation, depending on the numerical stiffness at any point in time.
 
-With fixed-step integrators, the time interval by which the state is advanced is constant throughout the simulation. While this approach is common among physics simulation engines, it has the disadvantage that a simulation can become unstable when the interval is too large. With variable-step integrators, the step-size $h$ is not fixed, but determined based on a set of accuracy settings $\mathcal{A}$:
+*Variable-step integrators* circumvent that issue by adapting the step-size to the current state of simulation. A variable-step integrator $I_A$  computes the step-size $h$ based on a set of accuracy requirements $A$:
 $$
-\{ h, q_{t+h}, \dot{q}_{t+h} \} = I(p_t, \dot{q}_{t}, \ddot{q}_{t}, \mathcal{A})
+\{ h, q_{t+h}, \dot{q}_{t+h} \} = I_A(q_t, \dot{q}_{t}, \ddot{q}_{t}, A)
 $$
 Variable-step integrators are an important part of Hyfydy, and allow for a stable and efficient trade-off between performance and accuracy.
 
