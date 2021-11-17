@@ -6,13 +6,15 @@
 
 Hyfydy is software for high-performance musculoskeletal simulation, with a focus on biomechanics research and predictive simulation of human and animal motion. It supports bodies, joints, contacts, musculotendon actuators, and torque actuators. Some of its key features include:
 
-* **High performance**. Hyfydy simulations run 50-100x faster than OpenSim[^SHUD2018], while using the same muscle and contact models.
-* **Force-based constraints**. Joint constraints in Hyfydy are modeled through forces that mimic the effect of cartilage and ligaments. This allows for customizable joint stiffness and damping, and closed kinematic chains.
-* **Stable integration**. Efficient error-controlled variable-step integration ensures the simulation always runs stable at a user-specified accuracy level.
-* **Accurate models**. Hyfydy implements research-grade state-of-the-art models for Hill-type musculotendon dynamics and contact forces. Simulations in Hyfydy are optimized to run at high frequencies (>3000Hz) for accurate simulation of stiff muscle and contact forces.
-* **Intuitive model format** (no XML) for easy model construction and editing. A tool for converting OpenSim models is included.
+* **High performance**. Hyfydy simulations run 50-100x faster than OpenSim[^SHUD2018], while using the same muscle and contact models. Hyfydy is fast enough for use in real-time applications such as games.
+* **Stable integration**. Efficient error-controlled variable-step integration methods ensure the simulation always runs stable at a user-specified accuracy level, without sacrificing performance.
+* **Accurate models**. Hyfydy contains research-grade state-of-the-art models for musculotendon dynamics and contact forces.
+* **Force-based constraints**. Joint constraints in Hyfydy are modeled through forces that mimic the effect of cartilage and ligaments. This allows for customizable joint stiffness and damping, and closed kinematic chains. Hyfydy is optimized to run at high simulation frequencies (>3000Hz) to efficiently handle stiff joint, muscle and contact forces.
+* **Intuitive model format** (no XML) for easy model building and editing. A tool for converting OpenSim models is included[^*].
 
 Hyfydy is currently available as a plugin for the open-source SCONE[^G2019]  simulation software. For more information on SCONE, please visit the [SCONE website](https://scone.software).
+
+[^*]: Only a selection of supported features.
 
 ## Citation
 
