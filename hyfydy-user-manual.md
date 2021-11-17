@@ -6,11 +6,11 @@
 
 Hyfydy is software for high-performance musculoskeletal simulation, with a focus on biomechanics research and predictive simulation of human and animal motion. It supports bodies, joints, contacts, musculotendon actuators, and torque actuators. Some of its key features include:
 
-* **High performance**. Simulations in Hyfydy are optimized to run at high frequencies (>3000Hz) for accurate simulation of stiff muscle and contact forces.
-* **Force-based simulation**. Hyfydy uses a full-coordinate system for all bodies, while joint constraints are modeled through forces that mimic the effect of cartilage and ligaments.
-* **Accurate muscle and contact models**. Hyfydy implements research-grade state-of-the-art models for Hill-type musculotendon dynamics and contact forces.
-* **Stable integration**. Efficient error-controlled variable time-step integrators ensure the simulation always runs stable at a user-specified accuracy level.
-* **Intuitive model format** (no XML) for easy editing. A tool for converting OpenSim models is included.
+* **High performance**. Hyfydy simulations run 50-100x faster than OpenSim[^SHUD2018], while using the same muscle and contact models.
+* **Force-based constraints**. Joint constraints in Hyfydy are modeled through forces that mimic the effect of cartilage and ligaments. This allows for customizable joint stiffness and damping, and closed kinematic chains.
+* **Stable integration**. Efficient error-controlled variable-step integration ensures the simulation always runs stable at a user-specified accuracy level.
+* **Accurate models**. Hyfydy implements research-grade state-of-the-art models for Hill-type musculotendon dynamics and contact forces. Simulations in Hyfydy are optimized to run at high frequencies (>3000Hz) for accurate simulation of stiff muscle and contact forces.
+* **Intuitive model format** (no XML) for easy model construction and editing. A tool for converting OpenSim models is included.
 
 Hyfydy is currently available as a plugin for the open-source SCONE[^G2019]  simulation software. For more information on SCONE, please visit the [SCONE website](https://scone.software).
 
@@ -41,9 +41,9 @@ Hyfydy employs an intuitive text-based model format (.hfd), which is designed to
 model {
 	name = my_model 
 	body {
-		name = cube 
-		mass = 1
-		inertia = [ 0.1 0.1 0.1 ]
+		name = my_body
+		mass = 3
+		inertia = [ 1.5 1.5 1.5 ]
 		pos = [ 0 1 0 ] # single-line comment
 	}
 	/* multi line
@@ -148,8 +148,8 @@ A `body` component can contain the following properties:
 ```
 body {
 	name = my_body
-	mass = 1
-	inertia = [ 0.1 0.1 0.1 ]
+	mass = 3
+	inertia = [ 1.5 1.5 1.5 ]
 	pos = [ 0 1 0 ]
 	ori = [ 0 0 45 ]
 }
@@ -536,9 +536,13 @@ simple_collision_detection { enable_collision_between_objects = 1 }
 
 ### Combining Material Properties
 
-When a collision is detected and a contact is generated, the material properties of both bodies are combined and used as part of the collision response.
+When a collision is detected and a contact is generated, the material properties of both geometries are combined into a new set of parameters, which in turn are used by the collision response force.
 
-*This section is still under construction*
+| Material Property                                        | Hyfydy                      | Simbody                                               |
+| -------------------------------------------------------- | --------------------------- | ----------------------------------------------------- |
+| `stiffness` ($k_1$, $k_2$)                               | $\frac{k_1 k_2}{k_1 + k_2}$ | $\frac{k_1 k_2}{k_1 + k_2 }$                          |
+| `damping` ($c_1$, $c_2$)                                 | $\frac{c_1 + c_2}{2}$       | $\frac{k_1}{k_1 + k_2}c_1 + \frac{k_2}{k_1 + k_2}c_2$ |
+| `static_friction`, `dynamic_friction` ($\mu_1$, $\mu_2$) | $\sqrt{\mu_1 \mu_2}$        | $2\frac{\mu_1 \mu_2}{\mu_1 + \mu_2}$                  |
 
 ### Collision Response
 
@@ -546,8 +550,18 @@ Collision response components compute actual contact forces, based on the contac
 
 #### contact_force_pd
 
-Simple linear damped spring contact restitution force, also known as the Kelvin-Voigt contact model.
-
+The `contact_force_pd` produces a linear damped spring contact restitution force, also known as the Kelvin-Voigt contact model. Given the material stiffness coefficient $k$ and dissipation coefficient $c$, the normal force $F_n$ is derived from penetration depth $d$ and normal velocity $v_n$, which is the contact velocity in the direction of contact normal $\vec{n}$:
+$$
+F_n=kd-cv_n
+$$
+The tangent force $\vec{F_t}$ depends on the static friction coefficient $\mu$, `viscosity` parameter $\eta$ and tangent velocity $\vec{v_t}$:
+$$
+F_t = \frac{-\vec{v_t}}{\|\vec{v_t}\|} \min(\eta \|\vec{v_t}\|, \mu F_n)
+$$
+The total contact force $\vec{F_c}$ corresponds to:
+$$
+\vec{F_c} = F_n \vec{n}+\vec{F_t}
+$$
 This force has no extra parameters and can be added by including:
 
 ```
@@ -556,11 +570,16 @@ contact_force_pd { viscosity = 1000 }
 
 #### contact_force_hunt_crossley
 
-The Hunt-Crossley[^HC1975] force model uses non-linear damping based on penetration depth.
+The non-linear Hunt-Crossley[^HC1975] contact force provides a better model of the dependence of the coefficient of restitution on velocity, based on observed evidence. Given material stiffness $k$, penetration depth $d$ and normal velocity $v_n$ the contact restitution force  $F_n$ corresponds to:
+$$
+F_n = kd^\frac{3}{2}(1-\frac{3}{2}c v_n)
+$$
+
+The friction force $\vec{F_t}$ and resulting contact force $\vec{F_c}$ are defined as in [contact_force_pd](#contact_force_pd).
 
 #### contact_force_hunt_crossley_sb
 
-Similar to `contact_force_hunt_crossley`, but with a [friction model used by Simbody and OpenSim](https://simbody.github.io/3.7.0/classSimTK_1_1HuntCrossleyForce.html#details). This force introduces the `transition_velocity` property, which is described [here](https://simbody.github.io/3.7.0/classSimTK_1_1HuntCrossleyForce.html#details). Lowering the transition velocity increases accuracy, at the cost of requiring smaller timesteps to achieve the same level of accuracy.
+Similar to `contact_force_hunt_crossley`, but with a friction model [attributed to Michael Hollars](https://simbody.github.io/3.7.0/classSimTK_1_1HuntCrossleyForce.html#details) and used by Simbody and OpenSim. This force introduces the `transition_velocity` property, which is described [here](https://simbody.github.io/3.7.0/classSimTK_1_1HuntCrossleyForce.html#details). Lowering the transition velocity increases accuracy, at the cost of simulation performance as a result of requiring smaller integration time steps.
 
 | Identifier            | Type   | Description         | Default |
 | --------------------- | ------ | ------------------- | ------- |
@@ -632,7 +651,7 @@ $$
 \{ q_{t+h}, \dot{q}_{t+h} \} = I_h(q_t, \dot{q}_{t}, \ddot{q}_{t}, h )
 $$
 
-The integrator $I_h$ is a *fixed-step integrator*: during each step, the state is advanced with with a constant time interval. While this approach is common among physics simulation engines, it leaves the difficulty of choosing the step-size $h$ to the user. Step-size that are too small are inefficient, while step-sizes that are too large cause the simulation to become unstable. In practice, the optimal step-size often varies greatly during the course of a simulation, depending on the numerical stiffness at any point in time.
+The integrator $I_h$ is referred to as a *fixed-step integrator*: during each step, the state is advanced with with a constant time interval. While this approach is common among physics simulation engines, it leaves the difficulty of choosing the step-size $h$ to the user. Step-size that are too small are inefficient, while step-sizes that are too large cause the simulation to become unstable. In practice, the optimal step-size often varies greatly during the course of a simulation, depending on the numerical stiffness at any point in time.
 
 *Variable-step integrators* circumvent that issue by adapting the step-size to the current state of simulation. A variable-step integrator $I_A$  computes the step-size $h$ based on a set of accuracy requirements $A$:
 $$
@@ -673,9 +692,11 @@ With this approach, both position and velocity updates are most accurate if acce
 
 ### Higher-order Methods
 
-In contrast to the first-order integrators described above, high-order integrators attempt to increase accuracy by evaluating the forces and accelerations at multiple points in time $t$.
+In contrast to the first-order integrators described above, high-order integrators attempt to increase accuracy by evaluating the forces and resulting accelerations at different points in time $t$.
 
-### Muscle Activation Dynamics
+*This section is under construction*
+
+## Muscle Activation Dynamics
 
 In addition to integrating body position and velocity, integrators in Hyfydy also handle muscle activation dynamics. The muscle activation and deactivate are properties that are part of the integrator:
 
@@ -686,24 +707,28 @@ In addition to integrating body position and velocity, integrators in Hyfydy als
 
 Given muscle activation $a_t$ and excitation $u_t$ at time $t$, then activation is updated to $a_{t+h}$ according to:
 $$
-\dot{a}_t & = & (u_t - a_t)(c_1 u_t + c_2)\\
-a_{t+h} & = &a_t + h \dot{a}_t
+a_{t+h} = a_t + h (u_t - a_t)(c_1 u_t + c_2)
 $$
 in which `activation_rate` corresponds to $c_1 + c_2$, while `deactivation_rate` corresponds to $c_2$.
 
-## Variable-step Integrators
+## Planar Integrators
 
-With fixed-step integrators, the time interval by which the state is advanced is constant throughout the simulation. While this approach is common among physics simulation engines, it has the disadvantage that a simulation can become unstable when the interval is too large. 
+Planar integrators only update positions in the *x-y plane*, and orientations in around the perpendicular *z-axis*. When using *planar models* with *planar forces*, these types of integrators increase simulation performance without loss of accuracy. See [Integrator Configuraton](#Integrator Configuraton) for more details.
 
-With variable-step integrators, the step-size $h$ is not fixed, but determined based on a set of accuracy settings $\mathcal{A}$:
-$$
-\{ h, q_{t+h}, \dot{q}_{t+h} \} = I(p_t, \dot{q}_{t}, \ddot{q}_{t}, \mathcal{A})
-$$
 ## Integrator Configuration
 
 In Hyfydy, the integrator can be configured via a configuration file. In SCONE, this configuration is directly added to the Model.
 
-# Practical Considerations
+| Integrator                           | Description                                             | Properties |
+| ------------------------------------ | ------------------------------------------------------- | ---------- |
+| `forward_euler_integrator`           | Fixed-step integrator using the Forward Euler method    |            |
+| `symplectic_euler_integrator`        | Fixed-step integrator using the Symplectic Euler method |            |
+| `midpoint_euler_integrator`          | Fixed-step integrator using the Midpoint Euler method   |            |
+| `planar_symplectic_euler_integrator` | Planar version of `symplectic_euler_integrator`         |            |
+
+*This section is under construction*
+
+# Hyfydy vs Other Simulators
 
 ## Hyfydy vs OpenSim
 
