@@ -736,30 +736,30 @@ In Hyfydy, the integrator can be configured via a configuration file. In SCONE, 
 
 ## Hyfydy vs OpenSim
 
-Hyfydy differs with OpenSim[^SHUD2018] in several ways that affect the simulation outcome. In this section, we provide an overview of all significant differences.
+Even though Hyfydy is based on the same models as OpenSim[^SHUD2018], there are some differences in implementation that result in slightly different simulation outcomes. As a consequence, results from a Hyfydy simulation are not directly transferable to OpenSim, and vice-versa. While this does not seem ideal, it is important to stress that both simulators are equally valid, and it usually only takes a small number of optimization iterations to convert from one result to another. In the remainder of this section, we provide an overview of all significant differences between Hyfydy and OpenSim.
 
 **Joint constraints**
 
-OpenSim uses generalized or reduced coordinates to describe the positions and velocities of the articulated bodies in the system, which automatically enforces joint constraints. In Hyfydy, each body has six degrees of freedom, and joint constraints are enforced explicitly through forces that mimic the effect of cartilage, bony structures and tendons. As a results, tiny displacements occur within joints, based on the stiffness and damping settings used by the joint constraint forces.
+OpenSim uses generalized or reduced coordinates to describe the positions and velocities of the articulated bodies in the system, which automatically enforces joint constraints. In Hyfydy, each body has six degrees of freedom, and joint constraints are enforced explicitly through forces that mimic the effect of cartilage, bony structures and tendons. This results in small displacements within joints – just as in biological joints. The amount of displacement is based on the joint stiffness and damping settings, which can be set individually per joint or computed automatically.
 
 **Joint limits**
 
-By default, Hyfydy uses a non-linear damping for joint limit forces, in which the damping is linearly proportional to the limit force. This behavior is similar to damping in Hunt-Crossley contact forces [^HC1975], and has similar benefits over the OpenSim `CoordinateLimitForce`, in which the damping is constant after the limit threshold.
+Hyfydy uses non-linear damping forces to enforce joint limits, where the amount of damping is proportional to the limit force. In contrast, the OpenSim `CoordinateLimitForce` uses a constant damping coefficient beyond the limit threshold. The behavior in Hyfydy is similar to damping in Hunt-Crossley contact forces [^HC1975], and has similar benefits over the OpenSim `CoordinateLimitForce`.
 
 **Friction force**
 
-The friction force in the OpenSim `HuntCrossleyFroce` is based on an unpublished [model attributed to Michael Hollars](https://simbody.github.io/3.7.0/classSimTK_1_1HuntCrossleyForce.html#details). Hyfydy also implements this model, in the force described as `contact_force_hunt_crossley_sb`.  In addition, the default `contact_force_hunt_crossley` in Hyfydy uses a model for static friction with a configurable transition velocity.
+The friction force in the OpenSim `HuntCrossleyFroce` is based on an unpublished [model attributed to Michael Hollars](https://simbody.github.io/3.7.0/classSimTK_1_1HuntCrossleyForce.html#details). Hyfydy provides an [exact implementation](#contact_force_hunt_crossley_sb) of this model via `contact_force_hunt_crossly_sb`, which can be used to emulate the behavior of OpenSim friction.
 
 **Muscle force**
 
-The implementation of the Millard Equilibrium Muscle Model [^MUSD2013] in Hyfydy differs from the OpenSim implementation in two significant ways:
+Hyfydy uses an optimized implementation of the Millard Equilibrium Muscle Model [^MUSD2013], which differs from the OpenSim implementation in two significant ways:
 
 1. The curves that describe the force-length and force-velocity relations, as well as the curves for passive tendon and muscle forces, are defined through polynomials instead of splines. The resulting curves in Hyfydy therefore differ slightly from the curves used in the OpenSim implementation.
 2. The muscle damping forces are computed explicitly instead through the iterative method in the original OpenSim implementation. The resulting muscle damping forces in Hyfydy therefore differ slightly from the forces produced in the OpenSim implementation.
 
 **Numeric Integration**
 
-OpenSim and Hyfydy both implement several variable-step integrators with user-configurable error control. In Hyfydy, the accuracy criterium is based on the highest error for each body, while OpenSim uses a weighted sum of errors to determine accuracy. Therefore, only in Hyfydy the error of each body is guaranteed to be below the specified accuracy threshold.
+OpenSim and Hyfydy both implement several variable-step integrators with user-configurable error control. In Hyfydy, the accuracy criterium is based on the *highest error* found across all bodies, while OpenSim uses a weighted sum of errors to determine accuracy. As a result, only in Hyfydy the error of each body is guaranteed to be below the specified accuracy threshold.
 
 # Version History
 
