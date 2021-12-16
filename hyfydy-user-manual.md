@@ -1,22 +1,24 @@
+# Hyfydy User Manual
+
 [toc]
 
-# Introduction
+## Introduction
 
-## About
+### About
 
 Hyfydy is software for high-performance musculoskeletal simulation, with a focus on biomechanics research and predictive simulation of human and animal motion. It supports bodies, joints, contacts, musculotendon actuators, and torque actuators. Some of its key features include:
 
 * **High performance**. Hyfydy simulations run 50-100x faster than OpenSim[^SHUD2018], using the same muscle and contact models*. Hyfydy is also fast enough for use in real-time applications such as games.
 * **Stable integration**. Efficient error-controlled variable-step integration methods ensure the simulation always runs stable at a user-specified accuracy level, without sacrificing performance.
 * **Accurate models**. Hyfydy contains research-grade state-of-the-art models for musculotendon dynamics and contact forces.
-* **Force-based constraints**. Joint constraints in Hyfydy are modeled through forces that mimic the effect of cartilage and ligaments. This allows for customizable joint stiffness and damping, and closed kinematic chains. Hyfydy is optimized to run at high simulation frequencies (>3000Hz) to efficiently handle stiff joint, muscle and contact forces.
-* **Intuitive model format** (no XML) for easy model building and editing. A tool for converting OpenSim models is included (only for supported features).
+* **Force-based constraints**. Joint constraints in Hyfydy are modeled through forces that mimic the effect of cartilage and ligaments. This allows for customizable joint stiffness and damping, and closed kinematic chains. Hyfydy is optimized to run at high simulation frequencies (>3000Hz) to efficiently handle stiff joint and contact constraint forces.
+* **Intuitive model format** for easy model building and editing. A tool for converting OpenSim models is included (only a subset of OpenSim features is supported).
 
 Hyfydy is currently available as a plugin for the open-source SCONE[^G2019]  simulation software. For more information on SCONE, please visit the [SCONE website](https://scone.software).
 
 *\* Performance comparison between Hyfydy and OpenSim was based on a 10 second gait simulation using a reflex-based controller[^GH2010] with hill-type musculotendon dynamics[^MUSD2013] and non-linear contact forces[^HC1975]. Control parameters were optimized in SCONE[^G2019] using 1000 generations of CMA-ES[^H2006] on a 4-core i7 Intel CPU.*
 
-## Citation
+### Citation
 
 If you use Hyfydy in a research project, please use the following citation:
 
@@ -31,9 +33,9 @@ If you use Hyfydy in a research project, please use the following citation:
 }
 ```
 
-# Model
+## Model
 
-## File Format
+### File Format
 
 Hyfydy employs an intuitive text-based model format (.hfd), which is designed to be easily edited or constructed by hand using a text editor. It consists of key-value pairs in the form `key = value`, curly braces `{ ... }` for groups and square brackets `[ ... ]` for arrays. Comments are supported through via `#` (one-line) or `/* */` (multi-line).
 
@@ -53,11 +55,11 @@ model {
 }
 ```
 
-## Data Types
+### Data Types
 
 The `.hfd` file format uses several reoccurring data types, which are explained below.
 
-### string
+#### string
 
 Strings are used to identify components. Quotes are not required, unless an identifier contains whitespace or special characters (`{`, `}`, `[`, `]`, `\` or `=`):
 
@@ -66,7 +68,7 @@ name = my_name
 another_name = "Name with special {characters}"
 ```
 
-### vector3
+#### vector3
 
 3D vectors are used to represent position, direction and linear / angular velocity. Values can be entered as an array, or using `x`, `y`, or `z` components:
 
@@ -76,7 +78,7 @@ velocity { x = 0 y = 1 z = 0 }
 earth_gravity { y = -9.81 }
 ```
 
-### quaternion
+#### quaternion
 
 Quaternions are used to represent rotations and orientations. They can be initialized using their w, x, y, z components directly, but also via an x-y-z Euler angle (recommended):
 
@@ -86,7 +88,7 @@ ori2 = [ 45 0 90 ] # 45 degrees around x, then 90 degrees around z
 ori3 { w = 1 x = 0 y = 0 z = 0 }
 ```
 
-### range
+#### range
 
 Ranges are used to describe any kind boundary, and are written as two numbers separated by two dots (`..`):
 
@@ -96,9 +98,9 @@ more_joint_limits = [ -10..10 0..0 -45..90 ]
 dof_range = 0..90
 ```
 
-## Core Components
+### Core Components
 
-### model
+#### model
 
 The top-level `model` component is mostly a container for other components. A typical model looks like this:
 
@@ -125,7 +127,7 @@ A `model` can contain the following properties:
 
 Other components, including [material](#material) and [model_options](#model_options), are described below.
 
-### body
+#### body
 
 Bodies are specified using the `body` component. They contain mass properties, position/orientation as well as linear and angular velocity. The body frame-of-reference always has its origin located at the center-of-mass and its axes must be aligned with the principle axes of inertia of the body.
 
@@ -179,7 +181,7 @@ body {
 
 **Note**: a `body` component does not include geometry used for contact detection and response. These are defined separately via a [geometry](#geometry) component.
 
-### joint
+#### joint
 
 Joint components constrain the motion between two bodies. They can contain the following properties:
 
@@ -230,7 +232,7 @@ body {
 }
 ```
 
-### geometry
+#### geometry
 
 The `geometry` component defines the properties needed for determining contacts and subsequent contact forces. They can contain the following properties:
 
@@ -265,7 +267,7 @@ geometry {
 
 Alternatively, geometry components can be specified *inside* a body component, in which case the `body` property can be omitted. The shape of the geometry can also be used to automatically calculate the mass properties.
 
-### material
+#### material
 
 The `material` component describes material properties used to compute contact forces. They contain the following properties:
 
@@ -279,7 +281,7 @@ The `material` component describes material properties used to compute contact f
 
 **Note**: the interpretation of the friction, stiffness and damping parameters depend on the type of [contact force](#contact forces) that is used in the simulation.
 
-### model_options
+#### model_options
 
 The properties defined in `model_options` are global defaults that apply to all components defined within the model. Their goal is to minimize duplication of common properties. The following properties can be specified within a `model_options` section:
 
@@ -297,9 +299,9 @@ The properties defined in `model_options` are global defaults that apply to all 
 | `limit_damping_mode`      | choice  | The way in which default limit damping is computed         | `critical_inertia` |
 | `muscle_force_multiplier` | number  | Factor by which muscle `max_isometric_force` is multiplied | `1`                |
 
-## Actuators
+### Actuators
 
-### point_path_muscle
+#### point_path_muscle
 
 The `point_path_muscle` component specifies a musculotendon unit which path is defined through a series of via points. It contains the following properties:
 
@@ -331,13 +333,13 @@ point_path_muscle {
 }
 ```
 
-### joint_point_path_muscle
+#### joint_point_path_muscle
 
 The `joint_point_path_muscle` is identical to a point path muscle, with the exception that with these types of muscles, joint torques are applied instead of forces. The advantage of applying a torque is that it leads to less joint displacement, which in turn can improve performance. Applying torques instead of forces also makes the simulation more similar to reduced coordinate simulation engines, such as OpenSim. If instead accurate computation of joint displacement caused by muscle force is required, this type of component is not recommended.
 
 The properties of the `joint_point_path_muscle` are identical to those of a [point_path_muscle](#point_path_muscle).
 
-### joint_motor
+#### joint_motor
 
 Joint motors produce a 3D joint torque based on joint angle and joint velocity. The amount of torque $\tau$ is based on base torque $\tau_{o}$, stiffness $k_p$, damping $k_d$, orientation $q$, target orientation $q_t$, angular velocity $\omega$, and target velocity $\omega_t$:
 $$
@@ -381,11 +383,11 @@ Joint motors can be modified during the simulation, allowing them to be part of 
 *  `set_motor_damping( number)` 
 *  `add_motor_torque( vector3 )`.
 
-## Auxiliary Components
+### Auxiliary Components
 
 Auxiliary components are not part of the simulation and therefore do not affect the outcome, but can be used by external software for analysis and visualization.
 
-### mesh
+#### mesh
 
 Components of type `mesh` can be used by client applications for visualizing bodies. In SCONE, `mesh` components are visualized in the 3D viewer window. They can contain the following properties:
 
@@ -407,7 +409,7 @@ mesh {
 }
 ```
 
-### dof
+#### dof
 
 Components of type `dof` can be used to describe a specific degree-of-freedom, which can be used by a client application for control and analysis. In SCONE, `dof` components are used to define model coordinates, which are used for analysis and control.
 
@@ -433,7 +435,7 @@ dof {
 }
 ```
 
-# Forces
+## Forces
 
 The motion of bodies is governed by forces and torques, which cause linear and angular accelerations on individual bodies. In Hyfydy, joint constraints are too enforced through explicit constraint forces. Each force is generated by a specific *force component*, which can be configured flexibly and at run-time, via a configuration script. It is possible to distinguish between different types of forces, including [joint forces](#joint forces), [contact forces](#contact forces), [actuator forces](#actuator forces) and [external forces](#external forces). 
 
@@ -450,11 +452,11 @@ composite_force {
 
 Multiple force component specified, actual forces are applied in order of specification. Each individual force component has its own properties.
 
-## Joint Forces
+### Joint Forces
 
 Joint forces hold bodies together, like ligaments and cartilage do in human and animal joints. In addition, ligaments and bony structures also limit the range of motion between bodies – these forces become active after a joint rotates beyond a specific threshold. In Hyfydy, the former set of forces is referred to as *joint constraint forces*, while the latter is referred to as *joint limit forces*. Both joint constraint and joint limit forces are produces by a single force component.
 
-### joint_force_pnld
+#### joint_force_pnld
 
 For each joint $j$, the `joint_force_pnld` component applies a force $F_j$ based on joint displacement $p_j$ and displacement velocity $v_j$:
 $$
@@ -482,7 +484,7 @@ The constants $k_p$, $k_d$, $k_\alpha$ and $k_\omega$ correspond to the `stiffne
 joint_force_pnld {}
 ```
 
-### joint_force_pd
+#### joint_force_pd
 
 This force is similar to `joint_force_pnld`, with the exception that the limit damping torque is linearly proportional to the angular velocity $\omega_j$:
 $$
@@ -490,7 +492,7 @@ $$
 $$
 This damping component is active immediately after a joint angle crosses its limit angle, resulting in an immediate torque in the opposite direction. As a result, using `joint_force_pnld` is recommended instead.
 
-### Planar Joint Forces
+#### Planar Joint Forces
 
 All joint forces have *planar* variants, which generate forces only in the *x-y plane*, and torques only around the perpendicular *z-axis*. Planar forces greatly improve simulation performance for planar (2D) models.
 
@@ -503,7 +505,7 @@ The force component names of the planar joint forces are as follows:
 
 **Important**: planar forces should always be used in combination with a [planar integrator](#Integrators).
 
-## Contact Forces
+### Contact Forces
 
 Contact forces are applied when the geometries of two bodies intersect. A contact force consists of a *restitution* and *friction* component, which are computed based on the penetration depth, the relative velocity of the bodies at the point of contact, and the `material` properties of the contact. The computation of contact forces consists of two phases:
 
@@ -514,11 +516,11 @@ In Hyfydy, each phase is configured using a separate force component, even thoug
 
 **Important**: both a collision detection and collision response force must be present in order for contact forces to work.
 
-### Collision Detection
+#### Collision Detection
 
 Collision detection components detect intersections between the geometries of pairs of bodies. Therefore, it is required to have a `geometry` attached to at least two different bodies in order for collision detection to work.
 
-#### simple_collision_detection
+##### simple_collision_detection
 
 The `simple_collision_detection` component detects intersections by going through all relevant pairs of objects. While this is a reasonable strategy when not many geometries are present (as is the case with typical biomechanics simulations), efficiency quickly declines when the number of bodies increases. Therefore, it is important to keep the number of geometries at a minimum when using the `simple_collision_detection` component.
 
@@ -538,7 +540,7 @@ The following properties can be set for `simple_collision_detection`:
 simple_collision_detection { enable_collision_between_objects = 1 }
 ```
 
-### Combining Material Properties
+#### Combining Material Properties
 
 When a collision is detected and a contact is generated, the material properties of both geometries are combined into a new set of parameters, which in turn are used by the collision response force.
 
@@ -548,11 +550,11 @@ When a collision is detected and a contact is generated, the material properties
 | `damping` ($c_1$, $c_2$)                                 | $\frac{c_1 + c_2}{2}$       | $\frac{k_1}{k_1 + k_2}c_1 + \frac{k_2}{k_1 + k_2}c_2$ |
 | `static_friction`, `dynamic_friction` ($\mu_1$, $\mu_2$) | $\sqrt{\mu_1 \mu_2}$        | $2\frac{\mu_1 \mu_2}{\mu_1 + \mu_2}$                  |
 
-### Collision Response
+#### Collision Response
 
 Collision response components compute actual contact forces, based on the contact found during the collision detection phase.
 
-#### contact_force_pd
+##### contact_force_pd
 
 The `contact_force_pd` produces a linear damped spring contact restitution force, also known as the Kelvin-Voigt contact model. Given the material stiffness coefficient $k$ and dissipation coefficient $c$, the normal force $F_n$ is derived from penetration depth $d$ and normal velocity $v_n$, which is the contact velocity in the direction of contact normal $\vec{n}$:
 $$
@@ -572,7 +574,7 @@ This force has no extra parameters and can be added by including:
 contact_force_pd { viscosity = 1000 }
 ```
 
-#### contact_force_hunt_crossley
+##### contact_force_hunt_crossley
 
 The non-linear Hunt-Crossley[^HC1975] contact force provides a better model of the dependence of the coefficient of restitution on velocity, based on observed evidence. Given material stiffness $k$, penetration depth $d$ and normal velocity $v_n$ the contact restitution force  $F_n$ corresponds to:
 $$
@@ -581,7 +583,7 @@ $$
 
 The friction force $\vec{F_t}$ and resulting contact force $\vec{F_c}$ are defined as in [contact_force_pd](#contact_force_pd).
 
-#### contact_force_hunt_crossley_sb
+##### contact_force_hunt_crossley_sb
 
 Similar to `contact_force_hunt_crossley`, but with a friction model [attributed to Michael Hollars](https://simbody.github.io/3.7.0/classSimTK_1_1HuntCrossleyForce.html#details) and used by Simbody and OpenSim. This force introduces the `transition_velocity` property, which is described [here](https://simbody.github.io/3.7.0/classSimTK_1_1HuntCrossleyForce.html#details). Lowering the transition velocity increases accuracy, at the cost of simulation performance as a result of requiring smaller integration time steps.
 
@@ -597,9 +599,9 @@ contact_force_hunt_crossley_sb {
 }
 ```
 
-## Actuator Forces
+### Actuator Forces
 
-### muscle_force_m2012fast
+#### muscle_force_m2012fast
 
 This is an optimized implementation of the Hill-type muscle model described by Millard et al.[^MUSD2013], which includes a passive damping term that allows velocity to be determined even when the muscle is deactivated. This is the **recommended muscle model** to be used in Hyfydy.
 
@@ -616,15 +618,15 @@ The `muscle_force_m2012fast` can include the following properties:
 | `v_max`                              | number  | Maximum muscle contraction velocity [m/s]                  | 10      |
 | `use_pennation_during_equilibration` | boolean | Use pennation angle during muscle equilibration            | 0       |
 
-### muscle_force_gh2010
+#### muscle_force_gh2010
 
 This is an implementation of the Hill-type muscle model described by Geyer & Herr[^GH2010]. It includes a passive spring that prevents the muscle from shortening after a specific length threshold. The force-velocity relationship is undefined at zero activation, as a result activation muscle be kept above a threshold (e.g. > 0.01) to ensure stability.
 
-### muscle_force_tj2003
+#### muscle_force_tj2003
 
 This is an implementation of the muscle model described in a [document authored by Chand T. John](https://simtk-confluence.stanford.edu/download/attachments/2624181/CompleteDescriptionOfTheThelen2003MuscleModel.pdf?version=1&modificationDate=1319838594036&api=v2), which describes the implementation in OpenSim of the muscle model published by Thelen[^T2003]. Despite its popularity, this model is best avoided, because its force-velocity relationship is poorly defined at low activation and relies heavily on its ad-hoc extrapolation of the force-velocity curve. We recommend using the `muscle_force_m2012fast` model instead.
 
-### joint_motor_force
+#### joint_motor_force
 
 The joint_motor_force component produces joint torques defined by [joint_motor](#joint_motor) components, and needs to be included for models that use them. They contain no additional settings.
 
@@ -632,23 +634,23 @@ The joint_motor_force component produces joint torques defined by [joint_motor](
 joint_motor_force {}
 ```
 
-## External Forces
+### External Forces
 
 External forces include gravity and perturbation. These forces are applied to automatically when defined in the model.
 
-### gravity
+#### gravity
 
 Gravity is applied automatically to all non-static bodies in the model. The magnitude and direction is determined by the `gravity` property defined inside the [model](#model). To disable gravity, simply add `gravity = [ 0 0 0 ]`.
 
-### perturbation
+#### perturbation
 
 Perturbation forces are applied automatically based on `perturbation` components defined inside the model. Since perturbations usually change over time, `perturbation` components are typically not defined in the model itself, but are added by a client application.
 
 In SCONE, perturbations and perturbation forces are enabled automatically when after specifying `enable_external_forces = 1` in the SCONE Model configuration.
 
-# Integrators
+## Integrators
 
-## Overview
+### Overview
 
 Integrators advance the simulation by updating the velocity and position/orientation of each body, based on the linear and angular acceleration that is the result of the sum of all forces. Formally, an integrator $I_h$ updates a set of generalized coordinates $q_t$ with derivatives $\dot{q}_{t}$ at time $t$ based on accelerations $\ddot{q}_{t}$ and step size $h$:
 $$
@@ -663,9 +665,9 @@ $$
 $$
 Variable-step integrators are an important part of Hyfydy, and allow for a stable and efficient trade-off between performance and accuracy.
 
-## Integration Methods
+### Integration Methods
 
-### Forward Euler
+#### Forward Euler
 
 The most straightforward integration method is the Forward Euler method, which updates positions  $q_t$ using velocities $\dot{q}_{t}$, which in turn are updated using accelerations $\ddot{q}_{t}$:
 
@@ -676,7 +678,7 @@ $$
 
 The downside of this approach is that the positions are updated using a poor estimate of the velocity during interval $h$. This can lead to an accumulation of errors and energy being added to system.
 
-### Symplectic Euler
+#### Symplectic Euler
 
 The Symplectic Euler or semi-implicit Euler method improves over the Forward Euler method by updating velocities first and using the updated velocities $\dot{q}_{t+h}$ to update positions  $q_t$:
 $$
@@ -685,7 +687,7 @@ q_{t+h} & = & q_t + h \dot{q}_{t+h}
 $$
 This approach leads to increased stability and energy conservation over the Forward Euler method. However, the position update is still based on a poor estimate of the velocity during the step (even with constant acceleration), and as such this method does not improve accuracy.
 
-### Midpoint Euler
+#### Midpoint Euler
 
 The Midpoint Euler method uses the average or midpoint velocity between to update the position, leading to a better position estimate:
 $$
@@ -694,13 +696,13 @@ q_{t+h} & = & p_t + \frac{h}{2}(\dot{q}_{t} + \dot{q}_{t+h})
 $$
 With this approach, both position and velocity updates are most accurate if acceleration $\ddot{q}_{t}$ remains constant over interval $h$. Despite being more accurate, it is typically outperformed by the Symplectic Euler method in terms of stability and energy conservation. However, in combination with a error-controlled variable-step integration strategy, the increased accuracy can be considered more important.
 
-### Higher-order Methods
+#### Higher-order Methods
 
 In contrast to the first-order integrators described above, high-order integrators attempt to increase accuracy by evaluating the forces and resulting accelerations at different points in time $t$.
 
 *This section is under construction*
 
-## Muscle Activation Dynamics
+### Muscle Activation Dynamics
 
 In addition to integrating body position and velocity, integrators in Hyfydy also handle muscle activation dynamics. The muscle activation and deactivate are properties that are part of the integrator:
 
@@ -715,11 +717,11 @@ a_{t+h} = a_t + h (u_t - a_t)(c_1 u_t + c_2)
 $$
 in which `activation_rate` corresponds to $c_1 + c_2$, while `deactivation_rate` corresponds to $c_2$.
 
-## Planar Integrators
+### Planar Integrators
 
 Planar integrators only update positions in the *x-y plane*, and orientations in around the perpendicular *z-axis*. When using *planar models* with *planar forces*, these types of integrators increase simulation performance without loss of accuracy. See [Integrator Configuraton](#Integrator Configuraton) for more details.
 
-## Integrator Configuration
+### Integrator Configuration
 
 In Hyfydy, the integrator can be configured via a configuration file. In SCONE, this configuration is directly added to the Model.
 
@@ -732,9 +734,9 @@ In Hyfydy, the integrator can be configured via a configuration file. In SCONE, 
 
 *This section is under construction*
 
-# Comparisons
+## Comparisons
 
-## Hyfydy vs OpenSim
+### Hyfydy vs OpenSim
 
 Even though Hyfydy is based on the same models as OpenSim[^SHUD2018], there are some differences in implementation that result in slightly different simulation outcomes. As a consequence, results from a Hyfydy simulation are not directly transferable to OpenSim, and vice-versa. While this does not seem ideal, it is important to stress that both simulators are equally valid, and it usually only takes a small number of optimization iterations to convert from one result to another. In the remainder of this section, we provide an overview of all significant differences between Hyfydy and OpenSim.
 
@@ -761,7 +763,7 @@ Hyfydy uses an optimized implementation of the Millard Equilibrium Muscle Model 
 
 OpenSim and Hyfydy both implement several variable-step integrators with user-configurable error control. In Hyfydy, the accuracy criterium is based on the *highest error* found across all bodies, while OpenSim uses a weighted sum of errors to determine accuracy. As a result, only in Hyfydy the error of each body is guaranteed to be below the specified accuracy threshold.
 
-# Version History
+## Version History
 
 Version history will be documented after the 1.0.0 release.
 
@@ -769,7 +771,7 @@ Version history will be documented after the 1.0.0 release.
 | ------- | ---- | ----------- |
 |         |      |             |
 
-# References
+## References
 
 [^G2019]:Geijtenbeek, T. (2019). SCONE: Open Source Software for Predictive Simulation of Biological Motion. Journal of Open Source Software, 4(38), 1421. https://doi.org/10.21105/joss.01421
 [^HC1975]:Hunt, K. H., & Crossley, F. R. E. (1975). Coefficient of Restitution Interpreted as Damping in Vibroimpact. Journal of Applied Mechanics, 42(2), 440.
