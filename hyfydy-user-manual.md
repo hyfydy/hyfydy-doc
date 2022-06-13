@@ -342,9 +342,11 @@ The properties of the `joint_point_path_muscle` are identical to those of a [poi
 #### joint_motor
 
 Joint motors produce a 3D joint torque based on joint angle and joint velocity. The amount of torque $\tau$ is based on base torque $\tau_{o}$, stiffness $k_p$, damping $k_d$, orientation $q$, target orientation $q_t$, angular velocity $\omega$, and target velocity $\omega_t$:
+
 $$
 \tau = \Big[\tau_{o} + k_p r(q^{-1} q_t) + k_d(v_{t}-v)\Big]^{\tau_{max}}
 $$
+
 The notation $[\space]^{\tau_{max}}$ is used to indicate that the magnitude of the final torque is clamped between $[-\tau_{max}, \tau_{max}]$. The function $r: \R^4 \rightarrow \R^3$ converts a quaternion to a 3D *rotation vector*, which corresponds to the 3D *rotation axis* scaled by *rotation angle* in radians.
 
 A `joint_motor` component can contain the following properties:
@@ -459,16 +461,21 @@ Joint forces hold bodies together, like ligaments and cartilage do in human and 
 #### joint_force_pnld
 
 For each joint $j$, the `joint_force_pnld` component applies a force $F_j$ based on joint displacement $p_j$ and displacement velocity $v_j$:
+
 $$
 F_j = -k_p p_j - k_v v_j
 $$
+
 The force $F_j$ is applied in opposite directions to the child and parent body of the joint, at their respective `pos_in_child` and `pos_in_parent` position. See [joint](#joint) for more details.
 
 In addition to a joint constraint force, `joint_force_pnld` also applies a joint limit torque $\tau_j$ based on joint angle $\alpha_j$ and angular velocity $\omega_j$. While the limit torque is proportional to joint displacement angle $\theta_j$, the limit damping torque is non-linear. This prevents damping to become active immediately after a joint angle crosses its limit. Instead, Hyfydy follows similar considerations as for the [Hunt-Crossley contact restitution force](#contact_force_hunt_crossley)[^HC1975], and scales the limit damping by the limit displacement torque:
+
 $$
 \tau_j = -k_\alpha \theta_j(\alpha_j, \alpha_{min}, \alpha_{max}) ( 1 + k_\omega \omega_j)
 $$
+
 in which the joint displacement angle $\theta_j$ is defined as:
+
 $$
 \theta_j(\alpha_j, \alpha_{min}, \alpha_{max}) = \begin{cases}
 \alpha_j - \alpha_{min}, & \text{if} \ \alpha_j < \alpha_{min}\\
@@ -476,7 +483,6 @@ $$
 0, & \text{otherwise}\\
 \end{cases}
 $$
-
 
 The constants $k_p$, $k_d$, $k_\alpha$ and $k_\omega$ correspond to the `stiffness`, `damping`, `limit_stiffness` and `limit_damping` parameters, which can be specified individually per [joint](#joint), or via defaults based on [model_options](#model_options). As a result, `joint_force_pnld` does not contain any options for itself and can simply be added as:
 
@@ -487,9 +493,11 @@ joint_force_pnld {}
 #### joint_force_pd
 
 This force is similar to `joint_force_pnld`, with the exception that the limit damping torque is linearly proportional to the angular velocity $\omega_j$:
+
 $$
 \tau_j = -k_\alpha \theta_j(\alpha_j, \alpha_{min}, \alpha_{max}) - k_\omega \omega_j
 $$
+
 This damping component is active immediately after a joint angle crosses its limit angle, resulting in an immediate torque in the opposite direction. As a result, using `joint_force_pnld` is recommended instead.
 
 #### Planar Joint Forces
@@ -557,17 +565,23 @@ Collision response components compute actual contact forces, based on the contac
 ##### contact_force_pd
 
 The `contact_force_pd` produces a linear damped spring contact restitution force, also known as the Kelvin-Voigt contact model. Given the material stiffness coefficient $k$ and dissipation coefficient $c$, the normal force $F_n$ is derived from penetration depth $d$ and normal velocity $v_n$, which is the contact velocity in the direction of contact normal $\vec{n}$:
+
 $$
 F_n=kd-cv_n
 $$
+
 The tangent force $\vec{F_t}$ depends on the static friction coefficient $\mu$, `viscosity` parameter $\eta$ and tangent velocity $\vec{v_t}$:
+
 $$
 F_t = \frac{-\vec{v_t}}{\|\vec{v_t}\|} \min(\eta \|\vec{v_t}\|, \mu F_n)
 $$
+
 The total contact force $\vec{F_c}$ corresponds to:
+
 $$
 \vec{F_c} = F_n \vec{n}+\vec{F_t}
 $$
+
 This force has no extra parameters and can be added by including:
 
 ```
@@ -653,6 +667,7 @@ In SCONE, perturbations and perturbation forces are enabled automatically when a
 ### Overview
 
 Integrators advance the simulation by updating the velocity and position/orientation of each body, based on the linear and angular acceleration that is the result of the sum of all forces. Formally, an integrator $I_h$ updates a set of generalized coordinates $q_t$ with derivatives $\dot{q}_{t}$ at time $t$ based on accelerations $\ddot{q}_{t}$ and step size $h$:
+
 $$
 \{ q_{t+h}, \dot{q}_{t+h} \} = I_h(q_t, \dot{q}_{t}, \ddot{q}_{t}, h )
 $$
@@ -660,9 +675,11 @@ $$
 The integrator $I_h$ is referred to as a *fixed-step integrator*: during each step, the state is advanced with with a constant time interval. While this approach is common among physics simulation engines, it leaves the difficulty of choosing the step-size $h$ to the user. Step-size that are too small are inefficient, while step-sizes that are too large cause the simulation to become unstable. In practice, the optimal step-size often varies greatly during the course of a simulation, depending on the numerical stiffness at any point in time.
 
 *Variable-step integrators* circumvent that issue by adapting the step-size to the current state of simulation. A variable-step integrator $I_A$  computes the step-size $h$ based on a set of accuracy requirements $A$:
+
 $$
 \{ h, q_{t+h}, \dot{q}_{t+h} \} = I_A(q_t, \dot{q}_{t}, \ddot{q}_{t}, A)
 $$
+
 Variable-step integrators are an important part of Hyfydy, and allow for a stable and efficient trade-off between performance and accuracy.
 
 ### Integration Methods
@@ -681,19 +698,23 @@ The downside of this approach is that the positions are updated using a poor est
 #### Symplectic Euler
 
 The Symplectic Euler or semi-implicit Euler method improves over the Forward Euler method by updating velocities first and using the updated velocities $\dot{q}_{t+h}$ to update positions  $q_t$:
+
 $$
 \dot{q}_{t+h} & = & \dot{q}_{t} + h \ddot{q}_{t} \\
 q_{t+h} & = & q_t + h \dot{q}_{t+h}
 $$
+
 This approach leads to increased stability and energy conservation over the Forward Euler method. However, the position update is still based on a poor estimate of the velocity during the step (even with constant acceleration), and as such this method does not improve accuracy.
 
 #### Midpoint Euler
 
 The Midpoint Euler method uses the average or midpoint velocity between to update the position, leading to a better position estimate:
+
 $$
 \dot{q}_{t+h} & = & \dot{q}_{t} + h \ddot{q}_{t} \\
 q_{t+h} & = & p_t + \frac{h}{2}(\dot{q}_{t} + \dot{q}_{t+h})
 $$
+
 With this approach, both position and velocity updates are most accurate if acceleration $\ddot{q}_{t}$ remains constant over interval $h$. Despite being more accurate, it is typically outperformed by the Symplectic Euler method in terms of stability and energy conservation. However, in combination with a error-controlled variable-step integration strategy, the increased accuracy can be considered more important.
 
 #### Higher-order Methods
@@ -712,9 +733,11 @@ In addition to integrating body position and velocity, integrators in Hyfydy als
 | `deactivation_rate` | number | The muscle deactivation rate [$s^{-1}$] | 25      |
 
 Given muscle activation $a_t$ and excitation $u_t$ at time $t$, then activation is updated to $a_{t+h}$ according to:
+
 $$
 a_{t+h} = a_t + h (u_t - a_t)(c_1 u_t + c_2)
 $$
+
 in which `activation_rate` corresponds to $c_1 + c_2$, while `deactivation_rate` corresponds to $c_2$.
 
 ### Planar Integrators
