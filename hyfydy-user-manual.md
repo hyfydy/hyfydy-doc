@@ -782,6 +782,10 @@ Hyfydy uses an optimized implementation of the Millard Equilibrium Muscle Model 
 1. The curves that describe the force-length and force-velocity relations, as well as the curves for passive tendon and muscle forces, are defined through polynomials instead of splines. The resulting curves in Hyfydy therefore differ slightly from the curves used in the OpenSim implementation.
 2. The muscle damping forces are computed explicitly instead through the iterative method in the original OpenSim implementation. The resulting muscle damping forces in Hyfydy therefore differ slightly from the forces produced in the OpenSim implementation.
 
+**Muscle activation dynamics**
+
+Hyfydy uses a different approach for computing [muscle activation dynamics](#Muscle Activation Dynamics) than [OpenSim](https://simtk-confluence.stanford.edu:8443/display/OpenSim/First-Order+Activation+Dynamics). As a result, muscle activation patterns can differ between Hyfydy and OpenSim -- even when excitation patterns are identical. This difference only occurs when the deactivation rate is different from the activation rate.
+
 **Numeric Integration**
 
 OpenSim and Hyfydy both implement several variable-step integrators with user-configurable error control. In Hyfydy, the accuracy criterium is based on the *highest error* found across all bodies, while OpenSim uses a weighted sum of errors to determine accuracy. As a result, only in Hyfydy the error of each body is guaranteed to be below the specified accuracy threshold.
