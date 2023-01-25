@@ -590,7 +590,7 @@ contact_force_pd { viscosity = 1000 }
 
 ##### contact_force_hunt_crossley
 
-The non-linear Hunt-Crossley[^HC1975] contact force provides a better model of the dependence of the coefficient of restitution on velocity, based on observed evidence. Given material stiffness $k$, penetration depth $d$ and normal velocity $v_n$ the contact restitution force  $F_n$ corresponds to:
+The non-linear Hunt-Crossley[^HC1975] contact force provides a better model of the dependence of the coefficient of restitution on velocity, based on observed evidence. Given material stiffness $k$, damping $c$, penetration depth $d$ and normal velocity $v_n$ the contact restitution force  $F_n$ corresponds to:
 $$
 F_n = kd^\frac{3}{2}(1-\frac{3}{2}c v_n)
 $$
