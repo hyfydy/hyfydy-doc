@@ -626,11 +626,11 @@ In order to increase performance, the Hyfydy implementation of the Millard Equil
 
 The `muscle_force_m2012fast` can include the following properties:
 
-| Identifier                           | Type    | Description                                                | Default |
-| ------------------------------------ | ------- | ---------------------------------------------------------- | ------- |
-| `xi`                                 | number  | Muscle damping factor, in the paper referred to as $\beta$ | 0.1     |
-| `v_max`                              | number  | Maximum muscle contraction velocity [m/s]                  | 10      |
-| `use_pennation_during_equilibration` | boolean | Use pennation angle during muscle equilibration            | 0       |
+| Identifier                           | Type    | Description                                                  | Default |
+| ------------------------------------ | ------- | ------------------------------------------------------------ | ------- |
+| `xi`                                 | number  | Muscle damping factor, in the paper referred to as $\beta$   | 0.1     |
+| `v_max`                              | number  | Maximum muscle contraction velocity [optimal_fiber_length/s] | 10      |
+| `use_pennation_during_equilibration` | boolean | Use pennation angle during muscle equilibration              | 0       |
 
 #### muscle_force_gh2010
 
