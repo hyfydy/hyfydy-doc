@@ -411,6 +411,29 @@ mesh {
 }
 ```
 
+```
+mesh {
+	shape {
+		type = cylinder
+		height = 0.5
+		radius = 0.05
+	}
+	pos = [ 0 0 0 ]
+	ori = [ 0 0 0 ]
+	color = [ 0.8 0.8 0.8 ]
+}
+```
+
+```
+mesh {
+	shape {
+		type = box
+		dim = [ 0.3 0.1 0.1 ]
+	}
+	color = [ 0.8 0.8 0.8 ]
+}
+```
+
 #### dof
 
 Components of type `dof` can be used to describe a specific degree-of-freedom, which can be used by a client application for control and analysis. In SCONE, `dof` components are used to define model coordinates, which are used for analysis and control.
