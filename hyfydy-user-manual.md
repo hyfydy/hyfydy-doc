@@ -1,14 +1,8 @@
-# Hyfydy User Manual
-
-[toc]
-
 ## Introduction
-
-### About
 
 Hyfydy is software for high-performance musculoskeletal simulation, with a focus on biomechanics research and predictive simulation of human and animal motion. It supports bodies, joints, contacts, musculotendon actuators, and torque actuators. Some of its key features include:
 
-* **High performance**. Hyfydy simulations run 50-100x faster than OpenSim[^SHUD2018], using the same muscle and contact models*. Hyfydy is also fast enough for use in real-time applications such as games.
+* **High performance**. Hyfydy simulations run approximately 100x faster than OpenSim[^SHUD2018], using the same muscle and contact models*. Hyfydy is also fast enough for use in real-time applications such as games.
 * **Stable integration**. Efficient error-controlled variable-step integration methods ensure the simulation always runs stable at a user-specified accuracy level, without sacrificing performance.
 * **Accurate models**. Hyfydy contains research-grade state-of-the-art models for musculotendon dynamics and contact forces.
 * **Force-based constraints**. Joint constraints in Hyfydy are modeled through forces that mimic the effect of cartilage and ligaments. This allows for customizable joint stiffness and damping, and closed kinematic chains. Hyfydy is optimized to run at high simulation frequencies (>3000Hz) to efficiently handle stiff joint and contact constraint forces.
