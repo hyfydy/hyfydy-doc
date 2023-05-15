@@ -114,10 +114,10 @@ model {
 
 A `model` can contain the following properties:
 
-| Identifier | Type    | Description                 | Default       |
-| ---------- | ------- | --------------------------- | ------------- |
-| `name`     | string  | Name of the model           | *empty*       |
-| `gravity`  | vector3 | Acceleration due to gravity | `[0 -9.81 0]` |
+| Identifier | Type             | Description                 | Default       |
+| ---------- | ---------------- | --------------------------- | ------------- |
+| `name`     | string           | Name of the model           | *empty*       |
+| `gravity`  | vector3 [m/s^2^] | Acceleration due to gravity | `[0 -9.81 0]` |
 
 Other components, including [material](#material) and [model_options](#model_options), are described below.
 
@@ -127,17 +127,17 @@ Bodies are specified using the `body` component. They contain mass properties, p
 
 A `body` component can contain the following properties:
 
-| Identifier | Type       | Description                                                  | Default      |
-| ---------- | ---------- | ------------------------------------------------------------ | ------------ |
-| `name`     | string     | Name of the body                                             | *empty*      |
-| `mass`     | number     | Body mass                                                    | *required*\* |
-| `inertia`  | vector3    | Diagonal components of the inertia matrix                    | *required*\* |
-| `density`  | number     | Density used to calculate the body mass and inertia, together with shape | *required*\* |
-| `shape`    | Shape      | Shape used to calculate the body mass and inertia, together with density | *required*\* |
-| `pos`      | vector3    | Initial position of the body center-of-mass                  | *zero*       |
-| `ori`      | quaternion | Initial orientation of the body                              | *identity*   |
-| `lin_vel`  | vector3    | Initial linear velocity of the body center-of-mass           | *zero*       |
-| `ang_vel`  | vector3    | Initial angular velocity of the body                         | *zero*       |
+| Identifier | Type             | Description                                                  | Default      |
+| ---------- | ---------------- | ------------------------------------------------------------ | ------------ |
+| `name`     | string           | Name of the body                                             | *empty*      |
+| `mass`     | number [kg]      | Body mass                                                    | *required*\* |
+| `inertia`  | vector3          | Diagonal components of the inertia matrix                    | *required*\* |
+| `density`  | number [kg/m^3^] | Density used to calculate the body mass and inertia, together with shape | *required*\* |
+| `shape`    | Shape            | Shape used to calculate the body mass and inertia, together with density | *required*\* |
+| `pos`      | vector3 [m]      | Initial position of the body center-of-mass                  | *zero*       |
+| `ori`      | quaternion       | Initial orientation of the body                              | *identity*   |
+| `lin_vel`  | vector3 [m/s]    | Initial linear velocity of the body center-of-mass           | *zero*       |
+| `ang_vel`  | vector3 [rad/s]  | Initial angular velocity of the body                         | *zero*       |
 
 \* A body must contain *either* `mass` and `inertia`, *or* `density` and `shape` in order to have valid mass properties.
 
@@ -179,19 +179,19 @@ body {
 
 Joint components constrain the motion between two bodies. They can contain the following properties:
 
-| Identifier        | Type       | Description                                                 | Default                         |
-| ----------------- | ---------- | ----------------------------------------------------------- | ------------------------------- |
-| `name`            | string     | Name of the joint                                           | *empty*                         |
-| `parent`          | string     | Name of the parent body                                     | *required*                      |
-| `child`           | string     | Name of the child body                                      | *required*                      |
-| `pos_in_parent`   | vector3    | Position of the joint in the parent body frame-of-reference | *required*                      |
-| `pos_in_child`    | vector3    | Position of the joint in the child body frame-of-reference  | *required*                      |
-| `ref_ori`         | quaternion | Reference orientation of the child body wrt the parent body | *identity*                      |
-| `stiffness`       | number     | Stiffness property of the joint constraint force            | [model_options](#model_options) |
-| `damping`         | number     | Damping property of the joint constraint force              | [model_options](#model_options) |
-| `limits`          | range      | Rotational joint limits, expressed as a vector3 of ranges   | *none*                          |
-| `limit_stiffness` | number     | Stiffness property of the joint limit force                 | [model_options](#model_options) |
-| `limit_damping`   | number     | Damping property of the joint limit force                   | [model_options](#model_options) |
+| Identifier        | Type            | Description                                                 | Default                         |
+| ----------------- | --------------- | ----------------------------------------------------------- | ------------------------------- |
+| `name`            | string          | Name of the joint                                           | *empty*                         |
+| `parent`          | string          | Name of the parent body                                     | *required*                      |
+| `child`           | string          | Name of the child body                                      | *required*                      |
+| `pos_in_parent`   | vector3 [m]     | Position of the joint in the parent body frame-of-reference | *required*                      |
+| `pos_in_child`    | vector3 [m]     | Position of the joint in the child body frame-of-reference  | *required*                      |
+| `ref_ori`         | quaternion      | Reference orientation of the child body wrt the parent body | *identity*                      |
+| `stiffness`       | number [N/m]    | Stiffness property of the joint constraint force            | [model_options](#model_options) |
+| `damping`         | number          | Damping property of the joint constraint force              | [model_options](#model_options) |
+| `limits`          | range [deg]     | Rotational joint limits, expressed as a vector3 of ranges   | *none*                          |
+| `limit_stiffness` | number [Nm/rad] | Stiffness property of the joint limit force                 | [model_options](#model_options) |
+| `limit_damping`   | number          | Damping property of the joint limit force                   | [model_options](#model_options) |
 
 There are no restrictions to the amount of joints a body can contain, and **kinematic loops are allowed**. However, adding superfluous joints will impact simulation performance.
 
@@ -230,14 +230,14 @@ body {
 
 The `geometry` component defines the properties needed for determining contacts and subsequent contact forces. They can contain the following properties:
 
-| Identifier | Type       | Description                                               | Default    |
-| ---------- | ---------- | --------------------------------------------------------- | ---------- |
-| `name`     | string     | Name of the model                                         | *empty*    |
-| `type`     | Shape      | Shape of the geometry                                     | *required* |
-| `body`     | string     | Name of the body to which the geometry is attached        | *required* |
-| `material` | string     | Name of the material associated with the contact geometry | *default*  |
-| `pos`      | vector3    | Position of the geometry in the body frame-of-reference   | `[0 0 0]`  |
-| `ori`      | quaternion | Orientation of the geometry relative to the body          | *identity* |
+| Identifier | Type        | Description                                               | Default    |
+| ---------- | ----------- | --------------------------------------------------------- | ---------- |
+| `name`     | string      | Name of the model                                         | *empty*    |
+| `type`     | Shape       | Shape of the geometry                                     | *required* |
+| `body`     | string      | Name of the body to which the geometry is attached        | *required* |
+| `material` | string      | Name of the material associated with the contact geometry | *default*  |
+| `pos`      | vector3 [m] | Position of the geometry in the body frame-of-reference   | `[0 0 0]`  |
+| `ori`      | quaternion  | Orientation of the geometry relative to the body          | *identity* |
 
 Supported shape types for geometry are:
 
@@ -279,19 +279,18 @@ The `material` component describes material properties used to compute contact f
 
 The properties defined in `model_options` are global defaults that apply to all components defined within the model. Their goal is to minimize duplication of common properties. The following properties can be specified within a `model_options` section:
 
-| Identifier                | Type    | Description                                                | Default            |
-| ------------------------- | ------- | ---------------------------------------------------------- | ------------------ |
-| `mirror`                  | boolean | Indicate whether components should be mirrored (0 or 1)    | `0`                |
-| `scale`                   | number  | Value by which the model is scaled                         | `1`                |
-| `density`                 | number  | Default density used for bodies                            | `1000`             |
-| `joint_stiffness`         | number  | Default stiffness for joints                               | `0`                |
-| `joint_damping`           | number  | Default damping for joints                                 | `1`                |
-| `damping_mode`            | choice  | The way in which default damping is computed               | `critical_mass`    |
-| `joint_limit_stiffness`   | number  | Default limit stiffness for joints                         | `0`                |
-| `joint_limit_damping`     | number  | Default limit damping for joints                           | `0`                |
-| `joint_stiffness`         | number  | Default stiffness for joints                               | `0`                |
-| `limit_damping_mode`      | choice  | The way in which default limit damping is computed         | `critical_inertia` |
-| `muscle_force_multiplier` | number  | Factor by which muscle `max_isometric_force` is multiplied | `1`                |
+| Identifier                | Type/Unit        | Description                                                | Default            |
+| ------------------------- | ---------------- | ---------------------------------------------------------- | ------------------ |
+| `mirror`                  | boolean          | Indicate whether components should be mirrored (0 or 1)    | `0`                |
+| `scale`                   | number           | Value by which the model is scaled                         | `1`                |
+| `density`                 | number [kg/m^3^] | Default density used for bodies                            | `1000`             |
+| `joint_stiffness`         | number [N/m]     | Default stiffness for joints                               | `0`                |
+| `joint_damping`           | number           | Default damping for joints                                 | `1`                |
+| `damping_mode`            | choice           | The way in which default damping is computed               | `critical_mass`    |
+| `joint_limit_stiffness`   | number [Nm/rad]  | Default limit stiffness for joints                         | `0`                |
+| `joint_limit_damping`     | number           | Default limit damping for joints                           | `0`                |
+| `limit_damping_mode`      | choice           | The way in which default limit damping is computed         | `critical_inertia` |
+| `muscle_force_multiplier` | number           | Factor by which muscle `max_isometric_force` is multiplied | `1`                |
 
 ### Actuators
 
@@ -299,14 +298,14 @@ The properties defined in `model_options` are global defaults that apply to all 
 
 The `point_path_muscle` component specifies a musculotendon unit which path is defined through a series of via points. It contains the following properties:
 
-| Identifier             | Type   | Description                                                  | Default    |
-| ---------------------- | ------ | ------------------------------------------------------------ | ---------- |
-| `name`                 | string | Name of the model                                            | *empty*    |
-| `max_isometric_force`  | number | Maximum isometric force of the musculotendon unit            | *required* |
-| `optimal_fiber_length` | number | Optimal fiber length of the musculotendon unit               | *required* |
-| `tendon_slack_length`  | number | Tendon slack length of the musculotendon unit                | *required* |
-| `pennation_angle`      | number | Pennation angle at optimal fiber length, **in radians**      | `0`        |
-| `stiffness_multiplier` | number | Multiplier applied to passive tendon an muscle elastic forces | `1`        |
+| Identifier             | Type         | Description                                                  | Default    |
+| ---------------------- | ------------ | ------------------------------------------------------------ | ---------- |
+| `name`                 | string       | Name of the model                                            | *empty*    |
+| `max_isometric_force`  | number [N]   | Maximum isometric force of the musculotendon unit            | *required* |
+| `optimal_fiber_length` | number [m]   | Optimal fiber length of the musculotendon unit               | *required* |
+| `tendon_slack_length`  | number [m]   | Tendon slack length of the musculotendon unit                | *required* |
+| `pennation_angle`      | number [rad] | Pennation angle at optimal fiber length, **in radians**      | `0`        |
+| `stiffness_multiplier` | number       | Multiplier applied to passive tendon an muscle elastic forces | `1`        |
 
 **Note**: the way in which muscle force is computed depends on the [muscle force](#Muscle Forces) that is used in the simulation.
 
@@ -345,15 +344,15 @@ The notation $[\space]^{\tau_{max}}$ is used to indicate that the magnitude of t
 
 A `joint_motor` component can contain the following properties:
 
-| Identifier      | Type       | Description                                                  | Default    |
-| --------------- | ---------- | ------------------------------------------------------------ | ---------- |
-| `joint`         | string     | name of the joint                                            | *required* |
-| `stiffness`     | number     | Stiffness for position-dependent torque ($k_p$)              | `0`        |
-| `damping`       | number     | Damping for velocity-dependent torque ($k_d$)                | `0`        |
-| `max_torque`    | number     | Maximum torque magnitude that can be applied by the motor ($\tau_{max}$) | +infinity  |
-| `target_ori`    | quaternion | Target orientation for the motor ($q_t$)                     | *identity* |
-| `target_vel`    | vector3    | Target angular velocity ($v_t$)                              | `[0 0 0]`  |
-| `torque_offset` | vector3    | Base torque ($\tau_o$)                                       | `[0 0 0]`  |
+| Identifier      | Type            | Description                                                  | Default    |
+| --------------- | --------------- | ------------------------------------------------------------ | ---------- |
+| `joint`         | string          | name of the joint                                            | *required* |
+| `stiffness`     | number [N/m]    | Stiffness for position-dependent torque ($k_p$)              | `0`        |
+| `damping`       | number [Ns/m]   | Damping for velocity-dependent torque ($k_d$)                | `0`        |
+| `max_torque`    | number [Nm]     | Maximum torque magnitude that can be applied by the motor ($\tau_{max}$) | +infinity  |
+| `target_ori`    | quaternion      | Target orientation for the motor ($q_t$)                     | *identity* |
+| `target_vel`    | vector3 [rad/s] | Target angular velocity ($v_t$)                              | `[0 0 0]`  |
+| `torque_offset` | vector3 [Nm]    | Base torque ($\tau_o$)                                       | `[0 0 0]`  |
 
 **Example**
 
@@ -387,13 +386,13 @@ Auxiliary components are not part of the simulation and therefore do not affect 
 
 Components of type `mesh` can be used by client applications for visualizing bodies. In SCONE, `mesh` components are visualized in the 3D viewer window. They can contain the following properties:
 
-| Identifier | Type       | Description                                         | Default       |
-| ---------- | ---------- | --------------------------------------------------- | ------------- |
-| `file`     | string     | Mesh filename                                       | *empty*       |
-| `shape`    | Shape      | Mesh shape                                          | *empty*       |
-| `pos`      | vector3    | Position of the mesh in the body reference frame    | `[0 0 0]`     |
-| `ori`      | quaternion | Orientation of the mesh in the body reference frame | *identity*    |
-| `color`    | color      | Color of the mesh, in format `[r g b a]`            | *unspecified* |
+| Identifier | Type        | Description                                         | Default       |
+| ---------- | ----------- | --------------------------------------------------- | ------------- |
+| `file`     | string      | Mesh filename                                       | *empty*       |
+| `shape`    | Shape       | Mesh shape                                          | *empty*       |
+| `pos`      | vector3 [m] | Position of the mesh in the body reference frame    | `[0 0 0]`     |
+| `ori`      | quaternion  | Orientation of the mesh in the body reference frame | *identity*    |
+| `color`    | color       | Color of the mesh, in format `[r g b a]`            | *unspecified* |
 
 **Example**
 
@@ -436,12 +435,12 @@ In Hyfydy, all bodies contain 6 degrees-of-freedom (3 translational and 3 rotati
 
 The `dof` component can contain the following properties:
 
-| Identifier | Type   | Description                                                  | Default    |
-| ---------- | ------ | ------------------------------------------------------------ | ---------- |
-| `name`     | string | Name of the degree-of-freedom                                | *required* |
-| `source`   | string | Default name of the dof. This consists of the name of the body appended by `_rx`, `_ry` or `_rz` for rotation relative to its parent, or `_tx`, `_ty` and `_tz` for translation of a root body. Dof values can be inverted by prepending the source with a minus sign (`-`). | *required* |
-| `default`  | number | Default value of the dof                                     | `0`        |
-| `range`    | range  | Minimum and maximum values of the dof. Note that these values are not enforced during the simulation, use a [joint limit force](#Joint Forces) for that instead. | `-90..90`  |
+| Identifier | Type              | Description                                                  | Default    |
+| ---------- | ----------------- | ------------------------------------------------------------ | ---------- |
+| `name`     | string            | Name of the degree-of-freedom                                | *required* |
+| `source`   | string            | Default name of the dof. This consists of the name of the body appended by `_rx`, `_ry` or `_rz` for rotation relative to its parent, or `_tx`, `_ty` and `_tz` for translation of a root body. Dof values can be inverted by prepending the source with a minus sign (`-`). | *required* |
+| `default`  | number [m or deg] | Default value of the dof                                     | `0`        |
+| `range`    | range [m or deg]  | Minimum and maximum values of the dof. Note that these values are not enforced during the simulation, use a [joint limit force](#Joint Forces) for that instead. | `-90..90`  |
 
 In Hyfydy, all bodies contain 6 degrees-of-freedom – 3 translational and 3 rotational. In practice, joints limit their movement…
 
@@ -618,9 +617,9 @@ The friction force $\vec{F_t}$ and resulting contact force $\vec{F_c}$ are defin
 
 Similar to `contact_force_hunt_crossley`, but with a friction model [attributed to Michael Hollars](https://simbody.github.io/3.7.0/classSimTK_1_1HuntCrossleyForce.html#details) and used by Simbody and OpenSim. This force introduces the `transition_velocity` property, which is described [here](https://simbody.github.io/3.7.0/classSimTK_1_1HuntCrossleyForce.html#details). Lowering the transition velocity increases accuracy, at the cost of simulation performance as a result of requiring smaller integration time steps.
 
-| Identifier            | Type   | Description         | Default |
-| --------------------- | ------ | ------------------- | ------- |
-| `transition_velocity` | number | Transition velocity | `0.1`   |
+| Identifier            | Type         | Description         | Default |
+| --------------------- | ------------ | ------------------- | ------- |
+| `transition_velocity` | number [m/s] | Transition velocity | `0.1`   |
 
 **Example**
 
@@ -643,11 +642,11 @@ In order to increase performance, the Hyfydy implementation of the Millard Equil
 
 The `muscle_force_m2012fast` can include the following properties:
 
-| Identifier                           | Type    | Description                                                  | Default |
-| ------------------------------------ | ------- | ------------------------------------------------------------ | ------- |
-| `xi`                                 | number  | Muscle damping factor, in the paper referred to as $\beta$   | 0.1     |
-| `v_max`                              | number  | Maximum muscle contraction velocity [optimal_fiber_length/s] | 10      |
-| `use_pennation_during_equilibration` | boolean | Use pennation angle during muscle equilibration              | 0       |
+| Identifier                           | Type                            | Description                                                | Default |
+| ------------------------------------ | ------------------------------- | ---------------------------------------------------------- | ------- |
+| `xi`                                 | number                          | Muscle damping factor, in the paper referred to as $\beta$ | 0.1     |
+| `v_max`                              | number [optimal_fiber_length/s] | Maximum muscle contraction velocity                        | 10      |
+| `use_pennation_during_equilibration` | bool                            | Use pennation angle during muscle equilibration            | 0       |
 
 #### muscle_force_gh2010
 
@@ -744,10 +743,10 @@ In contrast to the first-order integrators described above, high-order integrato
 
 In addition to integrating body position and velocity, integrators in Hyfydy also handle muscle activation dynamics. The muscle activation and deactivate are properties that are part of the integrator:
 
-| Identifier          | Type   | Description                             | Default |
-| ------------------- | ------ | --------------------------------------- | ------- |
-| `activation_rate`   | number | The muscle activation rate [$s^{-1}$]   | 100     |
-| `deactivation_rate` | number | The muscle deactivation rate [$s^{-1}$] | 25      |
+| Identifier          | Type           | Description                  | Default |
+| ------------------- | -------------- | ---------------------------- | ------- |
+| `activation_rate`   | number [s^-1^] | The muscle activation rate   | 100     |
+| `deactivation_rate` | number [s^-1^] | The muscle deactivation rate | 25      |
 
 Given muscle activation $a_t$ and excitation $u_t$ at time $t$, then activation is updated to $a_{t+h}$ according to:
 
