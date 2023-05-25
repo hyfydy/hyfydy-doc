@@ -17,8 +17,8 @@ Hyfydy is currently available as a plugin for the open-source SCONE[^G2019]  sim
 If you use Hyfydy in a research project, please use the following citation:
 
 ```
-@misc{Geijtenbeek21,
-   author = {Thomas Geijtenbeek},
+@misc{Geijtenbeek2021Hyfydy,
+   author = {Geijtenbeek, Thomas},
    title = {The {Hyfydy} Simulation Software},
    year = {2021},
    month = {11},
