@@ -613,6 +613,13 @@ $$
 
 The friction force $\vec{F_t}$ and resulting contact force $\vec{F_c}$ are defined as in [contact_force_pd](#contact_force_pd).
 
+##### Contact Force Stiffness
+
+Traditionally, the Hunt-Crossley stiffness depends on the radius of the contact sphere. In Hyfydy, the sphere radius is directly incorporated into the stiffness constant. The stiffness constant is updated automatically as part of the conversion from OpenSim to Hyfydy. Given contact sphere radius $r$ and OpenSim stiffness $k_{osim}$, the Hyfydy stiffness $k$ corresponds to:
+$$
+k = \left(\frac{4}{3}\sqrt{r}k_{osim}\right)^{2/3}
+$$
+
 ##### contact_force_hunt_crossley_sb
 
 Similar to `contact_force_hunt_crossley`, but with a friction model [attributed to Michael Hollars](https://simbody.github.io/3.7.0/classSimTK_1_1HuntCrossleyForce.html#details) and used by Simbody and OpenSim. This force introduces the `transition_velocity` property, which is described [here](https://simbody.github.io/3.7.0/classSimTK_1_1HuntCrossleyForce.html#details). Lowering the transition velocity increases accuracy, at the cost of simulation performance as a result of requiring smaller integration time steps.
