@@ -616,7 +616,7 @@ The friction force $\vec{F_t}$ and resulting contact force $\vec{F_c}$ are defin
 
 ##### Contact Stiffness Conversion
 
-Traditionally, the Hunt-Crossley stiffness depends on the radius of the contact sphere. In Hyfydy, however, the Hunt-Crossley sphere radius is incorporated into the stiffness constant, making the stiffness only depent on penetration depth. The stiffness constant is updated automatically as part of the conversion from OpenSim to Hyfydy. For any contact sphere radius $r$, the relation between contact stiffness for OpenSim ($k_{osim}$) and Hyfydy ($k$) is as follows:
+Traditionally, the Hunt-Crossley stiffness depends on the radius of the contact sphere. In Hyfydy, however, the Hunt-Crossley sphere radius is incorporated into the stiffness constant, making the stiffness only depent on penetration depth. The stiffness constant is updated automatically as part of the conversion from OpenSim to Hyfydy. For any contact sphere radius $r$, the relation between contact stiffness for OpenSim ($k_{osim}$) and Hyfydy ($k_{hfd}$) is as follows:
 
 $$
 k_{hfd} = \left(\frac{4}{3}\sqrt{r} k_{osim}\right)^\frac{2}{3} \quad ,\quad
