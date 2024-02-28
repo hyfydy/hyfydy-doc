@@ -347,8 +347,8 @@ A `joint_motor` component can contain the following properties:
 | Identifier      | Type            | Description                                                  | Default    |
 | --------------- | --------------- | ------------------------------------------------------------ | ---------- |
 | `joint`         | string          | name of the joint                                            | *required* |
-| `stiffness`     | number [N/m]    | Stiffness for position-dependent torque ($k_p$)              | `0`        |
-| `damping`       | number [Ns/m]   | Damping for velocity-dependent torque ($k_d$)                | `0`        |
+| `stiffness`     | number [Nm/rad] | Stiffness for position-dependent torque ($k_p$)              | `0`        |
+| `damping`       | number [Ns/rad] | Damping for velocity-dependent torque ($k_d$)                | `0`        |
 | `max_torque`    | number [Nm]     | Maximum torque magnitude that can be applied by the motor ($\tau_{max}$) | +infinity  |
 | `target_ori`    | quaternion      | Target orientation for the motor ($q_t$)                     | *identity* |
 | `target_vel`    | vector3 [rad/s] | Target angular velocity ($v_t$)                              | `[0 0 0]`  |
