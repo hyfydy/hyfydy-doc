@@ -363,8 +363,8 @@ A `joint_motor` component can contain the following properties:
 | Identifier      | Type            | Description                                                  | Default    |
 | --------------- | --------------- | ------------------------------------------------------------ | ---------- |
 | `joint`         | string          | name of the joint                                            | *required* |
-| `stiffness`     | number [N/m]    | Stiffness for position-dependent torque ($k_p$)              | `0`        |
-| `damping`       | number [Ns/m]   | Damping for velocity-dependent torque ($k_d$)                | `0`        |
+| `stiffness`     | number [Nm/rad] | Stiffness for position-dependent torque ($k_p$)              | `0`        |
+| `damping`       | number [Ns/rad] | Damping for velocity-dependent torque ($k_d$)                | `0`        |
 | `max_torque`    | number [Nm]     | Maximum torque magnitude that can be applied by the motor ($\tau_{max}$) | +infinity  |
 | `target_ori`    | quaternion      | Target orientation for the motor ($q_t$)                     | *identity* |
 | `target_vel`    | vector3 [rad/s] | Target angular velocity ($v_t$)                              | `[0 0 0]`  |
@@ -623,17 +623,20 @@ contact_force_pd { viscosity = 1000 }
 ##### contact_force_hunt_crossley
 
 The non-linear Hunt-Crossley[^HC1975] contact force provides a better model of the dependence of the coefficient of restitution on velocity, based on observed evidence. Given material stiffness $k$, damping $c$, penetration depth $d$ and normal velocity $v_n$ the contact restitution force  $F_n$ corresponds to:
+
 $$
 F_n = kd^\frac{3}{2}(1-\frac{3}{2}c v_n)
 $$
 
 The friction force $\vec{F_t}$ and resulting contact force $\vec{F_c}$ are defined as in [contact_force_pd](#contact_force_pd).
 
-##### Contact Force Stiffness
+##### Contact Stiffness Conversion
 
-Traditionally, the Hunt-Crossley stiffness depends on the radius of the contact sphere. In Hyfydy, the sphere radius is directly incorporated into the stiffness constant. The stiffness constant is updated automatically as part of the conversion from OpenSim to Hyfydy. Given contact sphere radius $r$ and OpenSim stiffness $k_{osim}$, the Hyfydy stiffness $k$ corresponds to:
+Traditionally, the Hunt-Crossley stiffness depends on the radius of the contact sphere. In Hyfydy, however, the Hunt-Crossley sphere radius is incorporated into the stiffness constant, making the stiffness only depent on penetration depth. The stiffness constant is updated automatically as part of the conversion from OpenSim to Hyfydy. For any contact sphere radius $r$, the relation between contact stiffness for OpenSim ($k_{osim}$) and Hyfydy ($k_{hfd}$) is as follows:
+
 $$
-k = \left(\frac{4}{3}\sqrt{r}k_{osim}\right)^{2/3}
+k_{hfd} = \left(\frac{4}{3}\sqrt{r} k_{osim}\right)^\frac{2}{3} \quad ,\quad
+k_{osim} = \frac{3}{4\sqrt{r}}(k_{hfd})^\frac{3}{2}
 $$
 
 ##### contact_force_hunt_crossley_sb
