@@ -675,14 +675,17 @@ The `muscle_force_m2012fast` can include the following properties:
 | `use_pennation_during_equilibration` | bool                            | Use pennation angle during muscle equilibration            | 0       |
 
 The normalized force-length multiplier is F_L$ is defined as:
+
 $$
 F_L(l) = \begin{cases}
 c_{1}\left(l-1\right)^{3}+c_{2}\left(l-1\right)^{2}+1 & \text{if} \ r_1 < l < r_2\\
 0 & \text{otherwise}\\\end{cases}
 $$
+
 in which $l$ is the normalized fiber length, $c_1 = 1.5$, $c_2 = -2.75$, $r_{1}=0.46899$ and $r_{2}=1.80528$.
 
 The normalized force-velocity multiplier $F_V$ is defined as:
+
 $$
 F_V(v) = \begin{cases}
 0 & \text{if} \ v \le -1 \\
@@ -690,6 +693,7 @@ F_V(v) = \begin{cases}
 \frac{F_{max}v+k_{2}}{k_{2}+v} & \text{if} \ v \ge 0\\
 \end{cases}
 $$
+
 in which $v$ is the normalized fiber velocity, $k_{1}=0.227$, $k_{2}=0.110$ and $F_{vmax}=1.6$.
 
 #### muscle_force_gh2010
