@@ -674,7 +674,7 @@ The `muscle_force_m2012fast` can include the following properties:
 | `v_max`                              | number [optimal_fiber_length/s] | Maximum muscle contraction velocity                        | 10      |
 | `use_pennation_during_equilibration` | bool                            | Use pennation angle during muscle equilibration            | 0       |
 
-The normalized force-length multiplier is F_L$ is defined as:
+The normalized force-length multiplier is $F_L$ is defined as:
 
 $$
 F_L(l) = \begin{cases}
