@@ -226,6 +226,22 @@ body {
 }
 ```
 
+#### joint_6dof
+
+The `joint_6dof` is a joint type that has translation limits in addition to rotation limits. Otherwise, it supports the same features as the regular `joint`. Example:
+
+```
+joint_6dof {
+	name = sliding_knee_r
+	parent = femur_r
+	child = tibia_r
+	pos_in_parent = [ 0 -0.226 0 ]
+	pos_in_child = [ 0 0.1867 0 ]
+	limits { x = 0..0 y = 0..0 z = -90..0 }
+	translation_limits { x = 0..0 y = -0.05..0.05 z = 0..0 }
+}
+```
+
 #### geometry
 
 The `geometry` component defines the properties needed for determining contacts and subsequent contact forces. They can contain the following properties:
@@ -654,6 +670,24 @@ The `muscle_force_m2012fast` can include the following properties:
 | `xi`                                 | number                          | Muscle damping factor, in the paper referred to as $\beta$ | 0.1     |
 | `v_max`                              | number [optimal_fiber_length/s] | Maximum muscle contraction velocity                        | 10      |
 | `use_pennation_during_equilibration` | bool                            | Use pennation angle during muscle equilibration            | 0       |
+
+The normalized force-length multiplier is F_L$ is defined as:
+$$
+F_L(l) = \begin{cases}
+c_{1}\left(l-1\right)^{3}+c_{2}\left(l-1\right)^{2}+1 & \text{if} \ r_1 < l < r_2\\
+0 & \text{otherwise}\\\end{cases}
+$$
+in which $l$ is the normalized fiber length, $c_1 = 1.5$, $c_2 = -2.75$, $r_{1}=0.46899$ and $r_{2}=1.80528$.
+
+The normalized force-velocity multiplier $F_V$ is defined as:
+$$
+F_V(v) = \begin{cases}
+0 & \text{if} \ v \le -1 \\
+\frac{k_{1}\left(v\ +\ 1\right)}{k_{1}-v} & \text{if} \ -1 < v < 0\\
+\frac{F_{max}v+k_{2}}{k_{2}+v} & \text{if} \ v \ge 0\\
+\end{cases}
+$$
+in which $v$ is the normalized fiber velocity, $k_{1}=0.227$, $k_{2}=0.110$ and $F_{vmax}=1.6$.
 
 #### muscle_force_gh2010
 
