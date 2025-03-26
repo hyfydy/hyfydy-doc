@@ -674,29 +674,61 @@ The `muscle_force_m2012fast` can include the following properties:
 | `v_max`                              | number [optimal_fiber_length/s] | Maximum muscle contraction velocity                        | 10      |
 | `use_pennation_during_equilibration` | bool                            | Use pennation angle during muscle equilibration            | 0       |
 
-The normalized force-length multiplier is $F_L$ is defined as:
+The tendon force $F_T$ is defined as:
 
 $$
-F_L(l) = \begin{cases}
-c_{1}\left(l-1\right)^{3}+c_{2}\left(l-1\right)^{2}+1 & \text{if} \ r_1 < l < r_2\\
+F_T(\epsilon) = F_{max} (\mathrm{c_{T1}} \epsilon^2+\mathrm{c_{T2}} \epsilon)
+$$
+in which $F_{max}$ is the maximum isometric force of the muscle, $\mathrm{c_{T1}} = 260.972$, $\mathrm{c_{T2}} = 7.9706$, and $\epsilon$ is the tendon strain, based on tendon length $l_t$ and tendon slack length $l_s$:
+
+$$
+\epsilon = \begin{cases}
+\frac{l_t - l_s}{l_s} & \text{if} \ l_t > l_s\\
 0 & \text{otherwise}\\
 \end{cases}
 $$
 
-in which $l$ is the normalized fiber length, $c_1 = 1.5$, $c_2 = -2.75$, $r_{1}=0.46899$ and $r_{2}=1.80528$.
-
-The normalized force-velocity multiplier $F_V$ is defined as:
+The muscle force $F_M$ is defined as:
 
 $$
-F_V(v) = \begin{cases}
-0 & \text{if} \ v \le -1 \\
-\frac{k_{1}\left(v\ +\ 1\right)}{k_{1}-v} & \text{if} \ -1 < v < 0\\
-\frac{F_{max}v+k_{2}}{k_{2}+v} & \text{if} \ v \ge 0\\
+F_M = F_{max}\left( a * f_L(l) * f_V(v) + f_P(l) - \beta v \right)
+$$
+
+in which $a$ is the muscle activation, $l$ is the normalized fiber length, $v$ is the normalized fiber velocity, and $\beta$ is the damping factor.
+
+The active force-length multiplier is $f_L$ is defined as:
+
+$$
+f_L(l) = \begin{cases}
+\mathrm{c_{L1}}\left(l-1\right)^{3}+\mathrm{c_{L2}}\left(l-1\right)^2+1 & \text{if} \ r_1 < l < r_2\\
+0 & \text{otherwise}\\
 \end{cases}
 $$
 
-in which $v$ is the normalized fiber velocity, $k_{1}=0.227$, $k_{2}=0.110$ and $F_{vmax}=1.6$.
+in which $\mathrm{c_{L1}} = 1.5$, $\mathrm{c_{L2}} = -2.75$, $r_{1}=0.46899$ and $r_{2}=1.80528$.
 
+The active force-velocity multiplier $f_V$ is defined as:
+
+$$
+f_V(v) = \begin{cases}
+0 & \text{if} \ v \le -1 \\
+\frac{\mathrm{c_{V1}}\left(v\ +\ 1\right)}{\mathrm{c_{V1}}-v} & \text{if} \ -1 < v < 0\\
+\frac{F_{max}v+\mathrm{c_{V2}}}{\mathrm{c_{V2}}+v} & \text{if} \ v \ge 0\\
+\end{cases}
+$$
+
+in which $v$ is the normalized fiber velocity, $\mathrm{c_{V1}}=0.227$, $\mathrm{c_{V2}}=0.110$ and $F_{vmax}=1.6$.
+
+Finally, the passive force-length multiplier $f_P$ used to compute the parallel elastic force is defined as:
+
+$$
+f_P(l) = \begin{cases}
+\mathrm{c_{P1}}\left(l-1\right)^{3}+\mathrm{c_{P1}}\left(l-1\right)^{2} & \text{if} \ l > 1\\
+0 & \text{otherwise}\\
+\end{cases}
+$$
+
+in which $\mathrm{c_{P1}} = 1.08027$ and $\mathrm{c_{P2}} = 1.27368$.
 #### muscle_force_gh2010
 
 This is an implementation of the Hill-type muscle model described by Geyer & Herr[^GH2010]. It includes a passive spring that prevents the muscle from shortening after a specific length threshold. The force-velocity relationship is undefined at zero activation, as a result activation muscle be kept above a threshold (e.g. > 0.01) to ensure stability.
