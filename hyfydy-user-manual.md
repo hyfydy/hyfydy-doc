@@ -679,6 +679,7 @@ The tendon force $F_T$ is defined as:
 $$
 F_T(\epsilon) = F_{max} (\mathrm{c_{T1}} \epsilon^2+\mathrm{c_{T2}} \epsilon)
 $$
+
 in which $F_{max}$ is the maximum isometric force of the muscle, $\mathrm{c_{T1}} = 260.972$, $\mathrm{c_{T2}} = 7.9706$, and $\epsilon$ is the tendon strain, based on tendon length $l_t$ and tendon slack length $l_s$:
 
 $$
@@ -729,6 +730,7 @@ f_P(l) = \begin{cases}
 $$
 
 in which $\mathrm{c_{P1}} = 1.08027$ and $\mathrm{c_{P2}} = 1.27368$.
+
 #### muscle_force_gh2010
 
 This is an implementation of the Hill-type muscle model described by Geyer & Herr[^GH2010]. It includes a passive spring that prevents the muscle from shortening after a specific length threshold. The force-velocity relationship is undefined at zero activation, as a result activation muscle be kept above a threshold (e.g. > 0.01) to ensure stability.
