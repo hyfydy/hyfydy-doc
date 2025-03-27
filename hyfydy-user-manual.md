@@ -689,13 +689,13 @@ $$
 \end{cases}
 $$
 
-The muscle force $F_M$ is defined as:
+The muscle force $F_M$ in the direction of the tendon is defined as:
 
 $$
-F_M(a, l, v) = F_{max}\left( a f_L(l) f_V(v) + f_P(l) - \beta v \right)
+F_M(a, l, v) = F_{max}\left( a f_L(l) f_V(v) + f_P(l) + \beta v \right) \cos \alpha
 $$
 
-in which $a$ is the muscle activation, $l$ is the normalized fiber length, $v$ is the normalized fiber velocity, and $\beta$ is the damping factor.
+in which $a$ is the muscle activation, $l$ is the normalized fiber length, $v$ is the normalized fiber velocity, $\beta$ is the damping coefficient, and $\alpha$ is the current pennation angle.
 
 The active force-length multiplier is $f_L$ is defined as:
 
