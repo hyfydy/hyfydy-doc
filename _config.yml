@@ -1,4 +1,4 @@
 title: Hyfydy User Manual
-theme: jekyll-theme-slate
-mathjax: true
-index_page: hyfydy-user-manual.md
+theme: jekyll-theme-minimal
+mathjax: true # this does not work
+index_page: hyfydy-user-manual.md # this does not work
