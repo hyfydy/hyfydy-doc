@@ -11,3 +11,4 @@ relative_links:
 include:
   - hyfydy-user-manual.md
 index_page: my-page.md
+theme: jekyll-theme-dinky
