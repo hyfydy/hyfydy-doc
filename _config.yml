@@ -10,3 +10,4 @@ relative_links:
   collections: true
 include:
   - hyfydy-user-manual.md
+index_page: my-page.md
