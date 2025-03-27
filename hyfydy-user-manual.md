@@ -692,7 +692,7 @@ $$
 The muscle force $F_M$ is defined as:
 
 $$
-F_M = F_{max}\left( a f_L(l) f_V(v) + f_P(l) - \beta v \right)
+F_M(a, l, v) = F_{max}\left( a f_L(l) f_V(v) + f_P(l) - \beta v \right)
 $$
 
 in which $a$ is the muscle activation, $l$ is the normalized fiber length, $v$ is the normalized fiber velocity, and $\beta$ is the damping factor.
@@ -714,7 +714,7 @@ $$
 f_V(v) = \begin{cases}
 0 & \text{if} \ v \le -1 \\
 \frac{\mathrm{c_{V1}}\left(v\ +\ 1\right)}{\mathrm{c_{V1}}-v} & \text{if} \ -1 < v < 0\\
-\frac{F_{max}v+\mathrm{c_{V2}}}{\mathrm{c_{V2}}+v} & \text{if} \ v \ge 0\\
+\frac{F_{vmax}v+\mathrm{c_{V2}}}{\mathrm{c_{V2}}+v} & \text{if} \ v \ge 0\\
 \end{cases}
 $$
 
