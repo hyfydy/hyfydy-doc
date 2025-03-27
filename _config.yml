@@ -1,3 +1,4 @@
 title: Hyfydy User Manual
 theme: jekyll-theme-slate
+mathjax: true
 index_page: hyfydy-user-manual.md
