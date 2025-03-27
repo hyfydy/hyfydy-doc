@@ -1,0 +1,12 @@
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true
+include:
+  - hyfydy-user-manual.md
