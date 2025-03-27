@@ -1,14 +1,2 @@
-defaults:
-  - scope:
-      path: ""
-    values:
-      layout: default
-plugins:
-  - jekyll-relative-links
-relative_links:
-  enabled: true
-  collections: true
-include:
-  - hyfydy-user-manual.md
-index_page: my-page.md
-theme: jekyll-theme-dinky
+title: Hyfydy User Manual
+theme: jekyll-theme-slate
