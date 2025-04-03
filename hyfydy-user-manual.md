@@ -897,6 +897,4 @@ OpenSim and Hyfydy both implement several variable-step integrators with user-co
 [^T2003]:Thelen, D. G. (2003). Adjustment of muscle mechanics model parameters to simulate dynamic contractions in older adults. Journal of Biomechanical Engineering, 125(1), 70–77. https://doi.org/10.1115/1.1531112
 [^GH2010]:Geyer, H., & Herr, H. (2010). A muscle-reflex model that encodes principles of legged mechanics produces human walking dynamics and muscle activities. IEEE Transactions on Neural Systems and Rehabilitation Engineering, 18(3), 263–273. **https://doi.org/10.1109/TNSRE.2010.2047592
 [^SHUD2018]:Seth, A., Hicks, J. L., Uchida, T. K., Habib, A., Dembia, C. L., Dunne, J. J., … Delp, S. L. (2018). OpenSim: Simulating musculoskeletal dynamics and neuromuscular control to study human and animal movement. PLoS Computational Biology, 14(7). https://doi.org/10.1371/journal.pcbi.1006223
-
 [^H2006]:Hansen, N. (2006). The CMA evolution strategy: a comparing review. Towards a New Evolutionary Computation, 75–102.
-
