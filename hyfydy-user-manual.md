@@ -157,7 +157,7 @@ When specifying a `density`  and `shape` and property, the mass and inertia are 
 
 * `sphere` (with `radius` parameter)
 * `cylinder` and `capsule` (with `radius` and `height` parameters)
-* `box` (with `half_dim` parameter)
+* `box` (with `dim` parameter)
 
 **Example**
 
@@ -167,7 +167,7 @@ body {
 	density = 1000
 	shape {
 		type = box
-		half_dim = [ 0.1 0.1 0.1 ]
+		dim = [ 0.1 0.1 0.1 ]
 	}
 	pos = [ 0 1 0 ]
 }
@@ -259,7 +259,7 @@ Supported shape types for geometry are:
 
 * `sphere` (with `radius` parameter)
 * `capsule` (with `radius` and `height` parameters)
-* `box` (with `half_dim` parameter)
+* `box` (with `dim` parameter)
 * `plane` (with `normal` parameter)
 
 An example of a geometry:
