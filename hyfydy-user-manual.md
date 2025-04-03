@@ -889,14 +889,6 @@ Hyfydy uses a different approach for computing [muscle activation dynamics](#Mus
 
 OpenSim and Hyfydy both implement several variable-step integrators with user-configurable error control. In Hyfydy, the accuracy criterium is based on the *highest error* found across all bodies, while OpenSim uses a weighted sum of errors to determine accuracy. As a result, only in Hyfydy the error of each body is guaranteed to be below the specified accuracy threshold.
 
-## Version History
-
-Version history will be documented after the 1.0.0 release.
-
-| Version | Date | Description |
-| ------- | ---- | ----------- |
-|         |      |             |
-
 ## References
 
 [^G2019]:Geijtenbeek, T. (2019). SCONE: Open Source Software for Predictive Simulation of Biological Motion. Journal of Open Source Software, 4(38), 1421. https://doi.org/10.21105/joss.01421
