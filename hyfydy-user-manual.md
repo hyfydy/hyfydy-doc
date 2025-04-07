@@ -402,13 +402,14 @@ Auxiliary components are not part of the simulation and therefore do not affect 
 
 Components of type `mesh` can be used by client applications for visualizing bodies. In SCONE, `mesh` components are visualized in the 3D viewer window. They can contain the following properties:
 
-| Identifier | Type        | Description                                         | Default       |
-| ---------- | ----------- | --------------------------------------------------- | ------------- |
-| `file`     | string      | Mesh filename                                       | *empty*       |
-| `shape`    | Shape       | Mesh shape                                          | *empty*       |
-| `pos`      | vector3 [m] | Position of the mesh in the body reference frame    | `[0 0 0]`     |
-| `ori`      | quaternion  | Orientation of the mesh in the body reference frame | *identity*    |
-| `color`    | color       | Color of the mesh, in format `[r g b a]`            | *unspecified* |
+| Identifier | Type           | Description                                         | Default       |
+| ---------- | -------------- | --------------------------------------------------- | ------------- |
+| `file`     | string         | Mesh filename                                       | *empty*       |
+| `shape`    | Shape          | Mesh shape                                          | *empty*       |
+| `pos`      | vector3 [m]    | Position of the mesh in the body reference frame    | `[0 0 0]`     |
+| `ori`      | quaternion     | Orientation of the mesh in the body reference frame | *identity*    |
+| `color`    | color          | Color of the mesh, in format `[r g b a]`            | *unspecified* |
+| `scale`    | scalar/vector3 | Relative scale of the mesh                          | 1             |
 
 **Example**
 
@@ -417,6 +418,7 @@ mesh {
 	file = example.obj
 	pos = [ 0 0.1 0.1 ]
 	ori = [ 0 90 0 ]
+	scale = 0.001 # convert from mm to m
 }
 ```
 
