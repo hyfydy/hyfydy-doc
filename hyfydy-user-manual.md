@@ -242,6 +242,21 @@ joint_6dof {
 }
 ```
 
+#### spring
+
+The `spring` component can be used to model linear damped springs.
+
+| Identifier      | Type         | Description                                                  | Default    |
+| --------------- | ------------ | ------------------------------------------------------------ | ---------- |
+| `name`          | string       | Name of the joint                                            | *empty*    |
+| `parent`        | string       | Name of the parent body                                      | *required* |
+| `child`         | string       | Name of the child body                                       | *required* |
+| `pos_in_parent` | vector3 [m]  | Attachment of the spring in the parent body frame-of-reference | *required* |
+| `pos_in_child`  | vector3 [m]  | Attachment of the spring in the child body frame-of-reference | *required* |
+| `rest_length`   | number [m]   | Spring rest length                                           | 0          |
+| `stiffness`     | number [N/m] | Stiffness property of the spring                             | 0          |
+| `damping`       | number       | Damping property of the spring                               | 0          |
+
 #### geometry
 
 The `geometry` component defines the properties needed for determining contacts and subsequent contact forces. They can contain the following properties:
