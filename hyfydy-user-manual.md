@@ -1,3 +1,12 @@
+# Hyfydy User Manual
+
+Version 1.0.0 • Updated 19 November 2025
+
+Copyright © 2025 Goatstream. All rights reserved.
+This manual is provided for informational purposes without warranty of any kind.
+
+[TOC]
+
 ## Introduction
 
 Hyfydy is software for high-performance musculoskeletal simulation, with a focus on biomechanics research and predictive simulation of human and animal motion. It supports bodies, joints, contacts, musculotendon actuators, and torque actuators. Some of its key features include:
