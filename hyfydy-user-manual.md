@@ -244,11 +244,11 @@ joint_6dof {
 
 #### spring
 
-The `spring` component can be used to model linear damped springs.
+The `spring` component can be used to model linear damped springs. The following properties are supported:
 
 | Identifier      | Type         | Description                                                  | Default    |
 | --------------- | ------------ | ------------------------------------------------------------ | ---------- |
-| `name`          | string       | Name of the joint                                            | *empty*    |
+| `name`          | string       | Name of the spring                                           | *empty*    |
 | `parent`        | string       | Name of the parent body                                      | *required* |
 | `child`         | string       | Name of the child body                                       | *required* |
 | `pos_in_parent` | vector3 [m]  | Attachment of the spring in the parent body frame-of-reference | *required* |
