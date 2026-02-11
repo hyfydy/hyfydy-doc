@@ -1,6 +1,6 @@
 # Hyfydy User Manual
 
-Version 1.0.0 • Updated 19 November 2025
+Version 1.0.1 • Updated 11 February 2026
 
 Copyright © 2025 Goatstream. All rights reserved.
 This manual is provided for informational purposes without warranty of any kind.
@@ -35,6 +35,22 @@ If you use Hyfydy in a research project, please use the following citation:
    note = {\url{https://hyfydy.com}}
 }
 ```
+
+### System Requirements
+
+#### Operating System
+
+- **Windows:** Windows 10 or 11 (64-bit)
+- **Linux:** Ubuntu 20.04 LTS or compatible distributions
+- **macOS:** macOS 13 (Ventura) or later
+
+#### Hardware
+
+- **Windows/Linux:** x86-64 (64-bit)
+- **macOS:** Support for both Intel x64 and Apple Silicon ARM64
+- **Memory (RAM):** Standard OS minimum
+- **Storage:** 100 MB available disk space
+- **Network**: Internet connection recommended for updates and online documentation
 
 ## Model
 
