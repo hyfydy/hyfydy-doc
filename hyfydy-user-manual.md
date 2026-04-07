@@ -1,6 +1,6 @@
 # Hyfydy User Manual
 
-Version 1.0.1 • Updated 11 February 2026
+Version 1.0.2 • Updated 7 April 2026
 
 Copyright © 2025 Goatstream. All rights reserved.
 This manual is provided for informational purposes without warranty of any kind.
@@ -251,6 +251,75 @@ body {
 }
 ```
 
+#### pin_joint
+
+The `pin_joint` is a joint type with one rotational degree of freedom along a custom rotation axis. It allows the limit stiffness and damping to be defined separately from the rotation constraint stiffness and damping. The following properties are supported:
+
+| Identifier                        | Type            | Description                                                                                             | Default                         |
+| --------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `name`                            | string          | Name of the joint                                                                                       | *empty*                         |
+| `parent`                          | string          | Name of the parent body                                                                                 | *required*                      |
+| `child`                           | string          | Name of the child body                                                                                  | *required*                      |
+| `pos_in_parent`                   | vector3 [m]     | Attachment of the spring in the parent body frame-of-reference                                          | *required*                      |
+| `pos_in_child`                    | vector3 [m]     | Attachment of the spring in the child body frame-of-reference                                           | *required*                      |
+| `axis`                            | vector3         | Rotation axis in the parent coordinate frame, this setting overrides `ori_in_parent` and `ori_in_child` | [0 0 1]                         |
+| `ori_in_parent`                   | quaternion      | Reference orientation in the parent coordinate frame, only valid if `axis` is not defined               | identity                        |
+| `ori_in_child`                    | quaternion      | Reference orientation in the child coordinate frame, only valid if `axis` is not defined                | identity                        |
+| `stiffness`                       | number [N/m]    | Stiffness property of the joint constraint force                                                        | [model_options](#model_options) |
+| `damping`                         | number          | Damping property of the joint constraint force                                                          | [model_options](#model_options) |
+| `limits`                          | range [deg]     | Rotational joint limits                                                                                 | *none*                          |
+| `limit_stiffness`                 | number [Nm/rad] | Stiffness property of the joint limit force                                                             | [model_options](#model_options) |
+| `limit_damping`                   | number          | Damping property of the joint limit force                                                               | [model_options](#model_options) |
+| `rotational_constraint_stiffness` | number [Nm/rad] | Stiffness of the rotational constraints                                                                 | [model_options](#model_options) |
+| `rotational_constraint_damping`   | number          | Damping of the rotational constraints                                                                   | [model_options](#model_options) |
+
+Example:
+
+```
+pin_joint {
+	name = ankle_r
+	parent = tibia_r
+	pos_in_parent { x = 0 y = -0.2433 z = 0 }
+	pos_in_child { x = -0.05123 y = 0.01195 z = -0.00792 }
+	axis { x = -0.105014 y = -0.174022 z = 0.979126 }
+	limits = -60..25
+}
+```
+
+#### ball_socket_joint
+
+The `ball_socket_joint` is a joint type with three rotational degree of freedom and asymmetric swing-twist joint limits. This joint type is designed to allow for more accurate modeling of the ball-and-socked joint limits, such as the hip or glenohumeral joint.
+
+The Y axis of the child coordinate frame is regarded as the twist angle, while the X and Z axes represent the swing cone. The ori_in_parent and ori_in_child properties can be used to define the joint coordinate frame relative to the parent and child body coordinate frames. The following properties are supported:
+
+| Identifier        | Type            | Description                                                    | Default                         |
+| ----------------- | --------------- | -------------------------------------------------------------- | ------------------------------- |
+| `name`            | string          | Name of the joint                                              | *empty*                         |
+| `parent`          | string          | Name of the parent body                                        | *required*                      |
+| `child`           | string          | Name of the child body                                         | *required*                      |
+| `pos_in_parent`   | vector3 [m]     | Attachment of the spring in the parent body frame-of-reference | *required*                      |
+| `pos_in_child`    | vector3 [m]     | Attachment of the spring in the child body frame-of-reference  | *required*                      |
+| `axis`            | vector3         | Rotation axis in the parent coordinate frame                   | [0 0 1]                         |
+| `ori_in_parent`   | quaternion      | Reference orientation in the parent coordinate frame           | identity                        |
+| `ori_in_child`    | quaternion      | Reference orientation in the child coordinate frame            | identity                        |
+| `stiffness`       | number [N/m]    | Stiffness property of the joint constraint force               | [model_options](#model_options) |
+| `damping`         | number          | Damping property of the joint constraint force                 | [model_options](#model_options) |
+| `limits`          | range [deg]     | Rotational joint limits, expressed as a vector3 of limits      | *none*                          |
+| `limit_stiffness` | number [Nm/rad] | Stiffness property of the joint limit force                    | [model_options](#model_options) |
+| `limit_damping`   | number          | Damping property of the joint limit force                      | [model_options](#model_options) |
+
+Example:
+
+```
+ball_socket_joint {
+	name = hip_r
+	parent = pelvis
+	pos_in_parent { x = 0 y = -0.0661 z = 0.0835 }
+	pos_in_child { x = 0 y = 0.17 z = 0 }
+	limits { x = -45..20 y = -45..45 z = -30..120 }
+}
+```
+
 #### joint_6dof
 
 The `joint_6dof` is a joint type that has translation limits in addition to rotation limits. Otherwise, it supports the same features as the regular `joint`. Example:
@@ -271,16 +340,16 @@ joint_6dof {
 
 The `spring` component can be used to model linear damped springs. The following properties are supported:
 
-| Identifier      | Type         | Description                                                  | Default    |
-| --------------- | ------------ | ------------------------------------------------------------ | ---------- |
-| `name`          | string       | Name of the spring                                           | *empty*    |
-| `parent`        | string       | Name of the parent body                                      | *required* |
-| `child`         | string       | Name of the child body                                       | *required* |
+| Identifier      | Type         | Description                                                    | Default    |
+| --------------- | ------------ | -------------------------------------------------------------- | ---------- |
+| `name`          | string       | Name of the spring                                             | *empty*    |
+| `parent`        | string       | Name of the parent body                                        | *required* |
+| `child`         | string       | Name of the child body                                         | *required* |
 | `pos_in_parent` | vector3 [m]  | Attachment of the spring in the parent body frame-of-reference | *required* |
-| `pos_in_child`  | vector3 [m]  | Attachment of the spring in the child body frame-of-reference | *required* |
-| `rest_length`   | number [m]   | Spring rest length                                           | 0          |
-| `stiffness`     | number [N/m] | Stiffness property of the spring                             | 0          |
-| `damping`       | number       | Damping property of the spring                               | 0          |
+| `pos_in_child`  | vector3 [m]  | Attachment of the spring in the child body frame-of-reference  | *required* |
+| `rest_length`   | number [m]   | Spring rest length                                             | 0          |
+| `stiffness`     | number [N/m] | Stiffness property of the spring                               | 0          |
+| `damping`       | number       | Damping property of the spring                                 | 0          |
 
 #### geometry
 
